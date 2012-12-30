@@ -8,23 +8,22 @@
 #include <QtNetwork>
 #include <QtXml>
 
-#include "../common/core/kcore.h"
+#include "ksir_common.h"
 
-class kServer : public QThread, public kCore
+class kServer : public kCore, public QThread
 {
 public:
 	kServer(const QDomNode&);
+	~kServer();
 
 	void run();
 
 	//XML
 	virtual void readXml(const QString&, const QDomElement&);
-	virtual void writeXml(QDomNode&, QString);
 
 private:
 	QTcpServer m_tcpServer;
-	QMap <kCore, QTcpSocket*> m_socketMap;
-	QList <QString> m_serverList;
+	QList <kDistant*> m_distantList;
 };
 
 #endif // KSERVER_H

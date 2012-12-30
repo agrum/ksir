@@ -6,26 +6,26 @@ kServer::kServer(const QDomNode& p_root):
 	start();
 }
 
+kServer::~kServer()
+{
+	while(!m_distantList.empty())
+		delete m_distantList.takeFirst();
+}
+
 void kServer::run()
 {
-	//Pending sockets
-	while(m_tcpServer.hasPendingConnections()){
-		m_socketMap.insert(kCore (), m_tcpServer.nextPendingConnection());
-	}
+
 }
 
 //XML
 void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 {
+	kCore::readXml(p_tag, p_node);
 	if(p_tag == XML_SERVER){
-		m_serverList.push_back(p_node.text());
-		if(p_node.text() == m_addr) //Either connect with all because unknown from all
-			m_serverList.clear();	//Either connect the subset after it to avoid double
+		kDistant* tmp = new kDistant(p_node);
+		m_distantList.push_back(tmp);
+		if(*(m_distantList.last()) == *this) //Either connect with all because unknown from all
+			m_distantList.clear();	//Either connect the subset after it to avoid double
 	}
-
-}
-
-void kServer::writeXml(QDomNode&, QString)
-{
 
 }

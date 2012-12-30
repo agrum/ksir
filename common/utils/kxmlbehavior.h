@@ -12,6 +12,7 @@
 #define XML_BOB "B"
 #define XML_FILE "file"
 #define XML_ADDR "address"
+#define XML_PORT "address"
 #define XML_SERVER "server"
 #define XML_CLIENT "client"
 
