@@ -2,6 +2,7 @@
 #define KSERVER_H
 
 #include <QMap>
+#include <QList>
 #include <QFile>
 #include <QThread>
 #include <QtNetwork>
@@ -12,17 +13,18 @@
 class kServer : public QThread, public kCore
 {
 public:
-	kServer(QFile&);
+	kServer(const QDomNode&);
 
 	void run();
 
 	//XML
-	virtual void readXml(const QDomNode&);
+	virtual void readXml(const QString&, const QDomElement&);
 	virtual void writeXml(QDomNode&, QString);
 
 private:
 	QTcpServer m_tcpServer;
 	QMap <kCore, QTcpSocket*> m_socketMap;
+	QList <QString> m_serverList;
 };
 
 #endif // KSERVER_H

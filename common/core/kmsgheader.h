@@ -25,6 +25,7 @@ public :
 	};
 
 	kMsgHeader();
+	kMsgHeader(const QDomNode&);
 	kMsgHeader(Type, const kCore&);
 	kMsgHeader(const kMsgHeader&);
 	kMsgHeader& operator=(const kMsgHeader&);
@@ -34,7 +35,7 @@ public :
 	int id() const { return m_id; }
 
 	//XML
-	void readXml(const QDomNode&);
+	void readXml(const QString&, const QDomElement&);
 	void writeXml(QDomNode&, const QString&);
 
 	QString print(QString);

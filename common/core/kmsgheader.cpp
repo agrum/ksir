@@ -15,6 +15,12 @@ kMsgHeader::kMsgHeader()
 
 }
 
+kMsgHeader::kMsgHeader(const QDomNode& p_root):
+	kXmlBehavior(p_root)
+{
+
+}
+
 kMsgHeader::kMsgHeader(Type p_type, const kCore& p_receiver) :
 	m_type(p_type),
 	m_receiver(p_receiver)
@@ -25,6 +31,7 @@ kMsgHeader::kMsgHeader(Type p_type, const kCore& p_receiver) :
 }
 
 kMsgHeader::kMsgHeader(const kMsgHeader& p_header) :
+	kXmlBehavior(),
 	m_id(p_header.m_id),
 	m_type(p_header.m_type),
 	m_receiver(p_header.m_receiver)
@@ -40,18 +47,13 @@ kMsgHeader& kMsgHeader::operator=(const kMsgHeader& p_header){
 	return *this;
 }
 
-void kMsgHeader::readXml(const QDomNode& p_root){
-	for (QDomNode n = p_root.firstChild(); !n.isNull(); n = n.nextSibling()){
-		if (n.isElement()){
-			QDomElement e = n.toElement();
-			if(e.tagName() == XML_ID)
-				m_id = e.text().toInt();
-			else if(e.tagName() == XML_TYPE)
-				m_type = (kMsgHeader::Type) e.text().toInt();
-			else if(e.tagName() == XML_BOB)
-				m_receiver.readXml(e);
-		}
-	}
+void kMsgHeader::readXml(const QString& p_tag, const QDomElement& p_node){
+	if(p_tag == XML_ID)
+		m_id = p_node.text().toInt();
+	else if(p_tag == XML_TYPE)
+		m_type = (kMsgHeader::Type) p_node.text().toInt();
+	else if(p_tag == XML_BOB)
+		m_receiver.setFrom(p_node);
 }
 
 void kMsgHeader::writeXml(QDomNode& p_root, const QString& p_name){

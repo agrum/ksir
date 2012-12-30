@@ -1,10 +1,9 @@
 #include "kserver.h"
 
-kServer::kServer(QFile& p_confFile)
+kServer::kServer(const QDomNode& p_root):
+	kCore(p_root)
 {
-	QDomDocument doc;
 
-	doc.setContent(&p_confFile);
 }
 
 void kServer::run()
@@ -13,8 +12,13 @@ void kServer::run()
 }
 
 //XML
-void kServer::readXml(const QDomNode&)
+void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 {
+	if(p_tag == XML_SERVER){
+		m_serverList.push_back(p_node.text());
+		if(p_node.text() == m_addr)
+			m_serverList.clear();
+	}
 
 }
 

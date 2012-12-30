@@ -5,16 +5,17 @@ kCore::kCore()
 
 }
 
-kCore::kCore(const QString& p_id, const QString& p_type):
-	m_id(p_id),
-	m_type(p_type)
+kCore::kCore(const QDomNode& p_root):
+	kXmlBehavior(p_root)
 {
 
 }
 
 kCore::kCore(const kCore& p_core):
+	kXmlBehavior(),
 	m_id(p_core.m_id),
-	m_type(p_core.m_type)
+	m_type(p_core.m_type),
+	m_addr(p_core.m_addr)
 {
 
 }
@@ -23,6 +24,7 @@ kCore& kCore::operator=(const kCore& p_core)
 {
 	m_id = p_core.m_id;
 	m_type = p_core.m_type;
+	m_addr = p_core.m_addr;
 
 	return *this;
 }
@@ -32,19 +34,14 @@ bool kCore::operator==(const kCore& p_core) const
 	return (m_id == p_core.m_id && m_type == p_core.m_type);
 }
 
-void kCore::readXml(const QDomNode& p_root)
+void kCore::readXml(const QString& p_tag, const QDomElement& p_node)
 {
-	QDomNode n = p_root.firstChild();
-	while (!n.isNull()){
-		if (n.isElement()){
-			QDomElement e = n.toElement();
-			if( e.tagName() == XML_ID )
-				m_id = e.text();
-			else if( e.tagName() == XML_TYPE )
-				m_type = e.text();
-		}
-		n = n.nextSibling();
-	}
+	if( p_tag == XML_ID )
+		m_id = p_node.text();
+	else if( p_tag == XML_TYPE )
+		m_type = p_node.text();
+	else if( p_tag == XML_ADDR )
+		m_addr = p_node.text();
 }
 
 void kCore::writeXml(QDomNode& p_root, const QString& p_name)
@@ -54,6 +51,7 @@ void kCore::writeXml(QDomNode& p_root, const QString& p_name)
 
 	addToElement(tag, XML_ID, m_id);
 	addToElement(tag, XML_TYPE, m_type);
+	addToElement(tag, XML_ADDR, m_addr);
 
 	p_root.appendChild(tag);
 }

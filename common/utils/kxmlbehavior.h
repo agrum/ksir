@@ -10,13 +10,21 @@
 #define XML_TYPE "type"
 #define XML_ALICE "A"
 #define XML_BOB "B"
+#define XML_FILE "file"
+#define XML_ADDR "address"
+#define XML_SERVER "server"
+#define XML_CLIENT "client"
 
 class kXmlBehavior
 {
+public:
+	void setFrom(const QDomNode&);
+
 protected :
 	kXmlBehavior() {}
+	kXmlBehavior(const QDomNode& p) { setFrom(p); }
 
-	virtual void readXml(const QDomNode&) = 0;
+	virtual void readXml(const QString&, const QDomElement&) = 0;
 	virtual void writeXml(QDomNode&, const QString&) = 0;
 
 	void addToElement(QDomNode&, const QString&, const QString&);
@@ -25,4 +33,7 @@ protected :
 	void addToElement(QDomNode&, const QString, const int);
 	void addToElement(QDomNode&, const QString, const qint64);
 	void addToElement(QDomNode&, const QString, const bool);
+
+private:
+	void readFile(const QString&);
 };

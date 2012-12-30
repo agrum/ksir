@@ -24,3 +24,7 @@ SOURCES += main.cpp \
 	kserver.cpp
 
 HEADERS += kserver.h
+
+OTHER_FILES += \
+    conf.d/serverlist.conf \
+    conf.d/global.conf

@@ -17,7 +17,9 @@ int main(int argc, char *argv[])
 		return false;
 	}
 
-	kServer server(file);
+	QDomDocument doc;
+	doc.setContent(&file);
+	kServer server(doc);
 
     return a.exec();
 }
