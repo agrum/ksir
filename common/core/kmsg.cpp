@@ -20,7 +20,7 @@ kMsg::kMsg(const kMsg& p_info) :
 
 kMsg::kMsg(const QByteArray& p_buffer){
 	m_info.setContent(p_buffer);
-	m_header.setFrom(m_info.firstChildElement("Header"));
+	m_header.from(m_info.firstChildElement("Header"));
 }
 
 kMsg& kMsg::operator=(const kMsg& p_info){
@@ -50,7 +50,7 @@ bool kMsg::find(const QString& p_tag, QDomNode& p_node){
 
 QByteArray kMsg::toMsg(){
 	QDomDocument rtn(m_info);
-	m_header.writeXml(rtn, "Header");
+	m_header.to(rtn, "Header");
 	return rtn.toByteArray();
 }
 

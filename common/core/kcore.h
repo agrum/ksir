@@ -20,7 +20,7 @@ public:
 
 	//XML
 	virtual void readXml(const QString&, const QDomElement&);
-	virtual void writeXml(QDomNode&, const QString&);
+	virtual void writeXml(QDomNode&);
 
 protected:
 	QString m_id;

@@ -53,18 +53,13 @@ void kMsgHeader::readXml(const QString& p_tag, const QDomElement& p_node){
 	else if(p_tag == XML_TYPE)
 		m_type = (kMsgHeader::Type) p_node.text().toInt();
 	else if(p_tag == XML_BOB)
-		m_receiver.setFrom(p_node);
+		m_receiver.from(p_node);
 }
 
-void kMsgHeader::writeXml(QDomNode& p_root, const QString& p_name){
-	QDomDocument doc = p_root.toDocument();
-	QDomElement tag = doc.createElement(p_name);
-
-	addToElement(tag, XML_ID, m_id);
-	addToElement(tag, XML_TYPE, m_type);
-	m_receiver.writeXml(tag, XML_BOB);
-
-	p_root.appendChild(tag);
+void kMsgHeader::writeXml(QDomNode& p_tag){
+	addToElement(p_tag, XML_ID, m_id);
+	addToElement(p_tag, XML_TYPE, m_type);
+	m_receiver.to(p_tag, XML_BOB);
 }
 
 QString kMsgHeader::print(QString p_blank){

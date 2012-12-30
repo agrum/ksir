@@ -36,7 +36,7 @@ public :
 
 	//XML
 	void readXml(const QString&, const QDomElement&);
-	void writeXml(QDomNode&, const QString&);
+	void writeXml(QDomNode&);
 
 	QString print(QString);
 

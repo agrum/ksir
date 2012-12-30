@@ -18,14 +18,15 @@
 class kXmlBehavior
 {
 public:
-	void setFrom(const QDomNode&);
+	void from(const QDomNode&);
+	void to(QDomNode&, const QString&);
 
 protected :
 	kXmlBehavior() {}
-	kXmlBehavior(const QDomNode& p) { setFrom(p); }
+	kXmlBehavior(const QDomNode& p) { from(p); }
 
 	virtual void readXml(const QString&, const QDomElement&) = 0;
-	virtual void writeXml(QDomNode&, const QString&) = 0;
+	virtual void writeXml(QDomNode&) = 0;
 
 	void addToElement(QDomNode&, const QString&, const QString&);
 	void addToElement(QDomNode&, const QString, const double);

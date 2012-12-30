@@ -19,10 +19,12 @@ LIBS += -L/home/agrum/Workspace/pomelog/lib \
 SOURCES += utils/kxmlbehavior.cpp \
 	core/kcore.cpp \
 	core/kmsg.cpp \
-	core/kmsgheader.cpp
+	core/kmsgheader.cpp \
+    core/kdistant.cpp
 
 HEADERS += utils/kxmlbehavior.h \
 	core/kcore.h \
 	core/kmsg.h \
 	core/kmsgheader.h \
-    include/ksir_common.h
+    include/ksir_common.h \
+    core/kdistant.h

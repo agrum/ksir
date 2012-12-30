@@ -1,6 +1,6 @@
 #include "kxmlbehavior.h"
 
-void kXmlBehavior::setFrom(const QDomNode& p_root)
+void kXmlBehavior::from(const QDomNode& p_root)
 {
 	QDomNode n = p_root.firstChild();
 	while (!n.isNull()){
@@ -16,6 +16,16 @@ void kXmlBehavior::setFrom(const QDomNode& p_root)
 	}
 }
 
+void kXmlBehavior::to(QDomNode& p_root, const QString& p_name)
+{
+	QDomDocument doc = p_root.toDocument();
+	QDomElement tag = doc.createElement(p_name);
+
+	writeXml(tag);
+
+	p_root.appendChild(tag);
+}
+
 void kXmlBehavior::readFile(const QString& p_filename)
 {
 	QFile lFile(p_filename);
@@ -23,7 +33,7 @@ void kXmlBehavior::readFile(const QString& p_filename)
 	if(lFile.exists() && lFile.open(QIODevice::ReadOnly)){
 		QDomDocument lConfig;
 		if(lConfig.setContent(&lFile, true, NULL, NULL, NULL))
-			setFrom(lConfig.documentElement());
+			from(lConfig.documentElement());
 		lFile.close();
 	}
 }

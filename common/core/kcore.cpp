@@ -44,14 +44,9 @@ void kCore::readXml(const QString& p_tag, const QDomElement& p_node)
 		m_addr = p_node.text();
 }
 
-void kCore::writeXml(QDomNode& p_root, const QString& p_name)
+void kCore::writeXml(QDomNode& p_tag)
 {
-	QDomDocument doc = p_root.toDocument();
-	QDomElement tag = doc.createElement(p_name);
-
-	addToElement(tag, XML_ID, m_id);
-	addToElement(tag, XML_TYPE, m_type);
-	addToElement(tag, XML_ADDR, m_addr);
-
-	p_root.appendChild(tag);
+	addToElement(p_tag, XML_ID, m_id);
+	addToElement(p_tag, XML_TYPE, m_type);
+	addToElement(p_tag, XML_ADDR, m_addr);
 }
