@@ -1,0 +1,78 @@
+/*
+ * kMsgHeader.cpp
+ *
+ *  Created on: 16 déc. 2011
+ *      Author: tle-guerroue
+ */
+
+#include "kmsgheader.h"
+
+unsigned int kMsgHeader::m_idCount = 0;
+QMutex kMsgHeader::m_mutex;
+
+kMsgHeader::kMsgHeader()
+{
+
+}
+
+kMsgHeader::kMsgHeader(Type p_type, const kCore& p_receiver) :
+	m_type(p_type),
+	m_receiver(p_receiver)
+{
+	m_mutex.lock();
+	m_id = m_idCount++;
+	m_mutex.unlock();
+}
+
+kMsgHeader::kMsgHeader(const kMsgHeader& p_header) :
+	m_id(p_header.m_id),
+	m_type(p_header.m_type),
+	m_receiver(p_header.m_receiver)
+{
+
+}
+
+kMsgHeader& kMsgHeader::operator=(const kMsgHeader& p_header){
+	m_id = p_header.m_id;
+	m_type = p_header.m_type;
+	m_receiver = p_header.m_receiver;
+
+	return *this;
+}
+
+void kMsgHeader::readXml(const QDomNode& p_root){
+	for (QDomNode n = p_root.firstChild(); !n.isNull(); n = n.nextSibling()){
+		if (n.isElement()){
+			QDomElement e = n.toElement();
+			if(e.tagName() == XML_ID)
+				m_id = e.text().toInt();
+			else if(e.tagName() == XML_TYPE)
+				m_type = (kMsgHeader::Type) e.text().toInt();
+			else if(e.tagName() == XML_BOB)
+				m_receiver.readXml(e);
+		}
+	}
+}
+
+void kMsgHeader::writeXml(QDomNode& p_root, const QString& p_name){
+	QDomDocument doc = p_root.toDocument();
+	QDomElement tag = doc.createElement(p_name);
+
+	addToElement(tag, XML_ID, m_id);
+	addToElement(tag, XML_TYPE, m_type);
+	m_receiver.writeXml(tag, XML_BOB);
+
+	p_root.appendChild(tag);
+}
+
+QString kMsgHeader::print(QString p_blank){
+	QString Result = p_blank + "kMsgHeader\n";
+
+	p_blank += " ";
+	Result += p_blank + "type : " + m_type + "\n";
+	Result += p_blank + "msgId : " + QString("%1").arg(m_id) + "\n";
+	Result += p_blank + "receiver : " + m_receiver.type() + "\n";
+	Result += p_blank + "receiverId : " + m_receiver.id() + "\n";
+
+	return Result;
+}
