@@ -5,6 +5,7 @@
 #include "kmsg.h"
 
 kMsg::kMsg(const QString& p_name, kMsgHeader::Type p_type, const kCore& p_receiver) :
+	m_time(QTime::currentTime()),
 	m_info(p_name),
 	m_header(p_type, p_receiver)
 {
@@ -12,33 +13,44 @@ kMsg::kMsg(const QString& p_name, kMsgHeader::Type p_type, const kCore& p_receiv
 }
 
 kMsg::kMsg(const kMsg& p_info) :
+	m_time(QTime::currentTime()),
 	m_info(p_info.m_info),
 	m_header(p_info.m_header)
 {
 
 }
 
-kMsg::kMsg(const QByteArray& p_buffer){
+kMsg::kMsg(const QByteArray& p_buffer):
+	m_time(QTime::currentTime())
+{
 	m_info.setContent(p_buffer);
 	m_header.from(m_info.firstChildElement("Header"));
 }
 
-kMsg& kMsg::operator=(const kMsg& p_info){
+kMsg& kMsg::operator=(const kMsg& p_info)
+{
+	m_time = p_info.time;
 	m_info = p_info.m_info;
 	m_header = p_info.m_header;
 
 	return *this;
 }
 
+bool kMsg::outdated()
+{
+	return m_time < QTime::currentTime() + 2000;
+}
 
-bool kMsg::exist(const QString& p_tag){
+bool kMsg::exist(const QString& p_tag)
+{
 	for (QDomNode n = m_info.firstChild(); !n.isNull(); n = n.nextSibling())
 		if (n.localName() == p_tag)
 			return true;
 	return false;
 }
 
-bool kMsg::find(const QString& p_tag, QDomNode& p_node){
+bool kMsg::find(const QString& p_tag, QDomNode& p_node)
+{
 	for (QDomNode n = m_info.firstChild(); !n.isNull(); n = n.nextSibling()){
 		if (n.localName() == p_tag){
 			p_node = n;
@@ -46,6 +58,11 @@ bool kMsg::find(const QString& p_tag, QDomNode& p_node){
 		}
 	}
 	return false;
+}
+
+bool kMsg::operator ==(const QString& p_name)
+{
+	return m_info.localName() == p_name;
 }
 
 QByteArray kMsg::toMsg(){

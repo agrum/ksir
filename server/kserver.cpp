@@ -14,7 +14,14 @@ kServer::~kServer()
 
 void kServer::run()
 {
+	int err = 0;
 
+	while(!err){
+		if(m_tcpServer.hasPendingConnections()){
+			kDistant tmp = new kDistant(m_tcpServer.nextPendingConnection());
+			m_distantList.push_back(tmp);
+		}
+	}
 }
 
 //XML

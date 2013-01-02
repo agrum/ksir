@@ -1,6 +1,8 @@
 #include "kdistant.h"
 
 kDistant::kDistant(QTcpSocket* p_socket):
+	m_front(QTime::currentTime()),
+	m_end(QTime::currentTime()),
 	m_responsible(false),
 	m_socket(p_socket)
 {
@@ -10,6 +12,8 @@ kDistant::kDistant(QTcpSocket* p_socket):
 kDistant::kDistant(const QDomNode& p_root):
 	kCore(p_root),
 	pLogBehavior("kDistant"),
+	m_front(QTime::currentTime()),
+	m_end(QTime::currentTime()),
 	m_responsible(true),
 	m_socket(new QTcpSocket())
 {
@@ -25,6 +29,23 @@ kDistant::~kDistant()
 	wait();
 	if(m_responsible)
 		delete m_socket;
+}
+
+bool kDistant::alive()
+{
+	if(!m_socket->isValid()){
+		pLogW(this, pLog::WARNING_NONE, "alive - invalid socket");
+		return false;
+	}
+	if(m_end < QTime::currentTime() + 2000){
+		pLogW(this, pLog::WARNING_NONE, "alive - end outdated");
+		return false;
+	}
+	if(m_front < QTime::currentTime() + 2000){
+		pLogW(this, pLog::WARNING_NONE, "alive - front outdated");
+		return false;
+	}
+	return true;
 }
 
 bool kDistant::sendMsg(QList<kMsg> p_list)
@@ -46,6 +67,9 @@ QList<kMsg> kDistant::getMsg()
 	if(isNull())
 		*this = rtn.first().header().receiver();
 
+	if(rtn.removeAll("Alive") > 0)
+		m_end = QTime::currentTime();
+
 	return rtn;
 }
 
@@ -55,12 +79,24 @@ void kDistant::run(){
 			m_socket->connectToHost(m_addr, m_port);
 		else{
 			m_mutex.lock();
+			//Alive
+			if(QTime::currentTime() - 1000 > m_time){
+				kMsg tmp("Alive", kMsgHeader::INFO, *this);
+
+				m_front = QTime::currentTime();
+				m_sendList.push_back(tmp);
+			}
 			//Send outgoing messages
-			if(!m_sendList.empty())
-				m_socket->write(m_sendList.takeFirst().toMsg());
+			while(!m_sendList.empty()){
+				kMsg tmp = m_sendList.takeFirst();
+				if(!tmp.outdated())
+					m_socket->write(tmp.toMsg());
+				else
+					pLog::logW(this, pLog::WARNING_NONE, "message outdated, not send")
+			}
 
 			//Get pending messages
-			if(m_socket->canReadLine())
+			while(m_socket->canReadLine())
 				m_receiveList.push_back(kMsg (m_socket->readLine()));
 			m_mutex.unlock();
 		}
