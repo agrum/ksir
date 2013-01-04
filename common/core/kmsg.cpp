@@ -29,7 +29,7 @@ kMsg::kMsg(const QByteArray& p_buffer):
 
 kMsg& kMsg::operator=(const kMsg& p_info)
 {
-	m_time = p_info.time;
+	m_time = p_info.m_time;
 	m_info = p_info.m_info;
 	m_header = p_info.m_header;
 
@@ -38,7 +38,7 @@ kMsg& kMsg::operator=(const kMsg& p_info)
 
 bool kMsg::outdated()
 {
-	return m_time < QTime::currentTime() + 2000;
+	return m_time < QTime::currentTime().addMSecs(2000);
 }
 
 bool kMsg::exist(const QString& p_tag)

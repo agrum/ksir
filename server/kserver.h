@@ -9,6 +9,7 @@
 #include <QtXml>
 
 #include "ksir_common.h"
+#include "utils/kdatabase.h"
 
 class kServer : public kCore, public QThread
 {
@@ -22,6 +23,7 @@ public:
 	virtual void readXml(const QString&, const QDomElement&);
 
 private:
+	kDatabase m_database;
 	QTcpServer m_tcpServer;
 	QList <kDistant*> m_distantList;
 };

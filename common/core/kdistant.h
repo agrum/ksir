@@ -29,7 +29,7 @@ public:
 	virtual void writeXml(QDomNode&) {}
 
 private:
-	kDistant(const kDistant&): kCore(), QThread() {}
+	kDistant(const kDistant&): kCore(), QThread(), pLogBehavior() {}
 	kDistant& operator=(const kDistant&) { return *this; }
 
 private:

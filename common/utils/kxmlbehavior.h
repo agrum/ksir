@@ -15,6 +15,7 @@
 #define XML_PORT "address"
 #define XML_SERVER "server"
 #define XML_CLIENT "client"
+#define XML_DATABASE "database"
 
 class kXmlBehavior
 {

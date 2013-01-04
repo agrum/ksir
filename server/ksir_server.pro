@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core xml network
+QT       += core xml network sql
 QT       -= gui
 
 TARGET = ksir
@@ -21,9 +21,11 @@ LIBS += -L/home/agrum/Workspace/ksir/build_common/lib \
 	-lpomelog
 
 SOURCES += main.cpp \
-	kserver.cpp
+	kserver.cpp \
+    utils/kdatabase.cpp
 
-HEADERS += kserver.h
+HEADERS += kserver.h \
+    utils/kdatabase.h
 
 OTHER_FILES += \
     conf.d/serverlist.conf \
