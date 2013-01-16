@@ -17,10 +17,10 @@ kDistant::kDistant(const QDomNode& p_root):
 	m_responsible(true),
 	m_socket(new QTcpSocket())
 {
+	from(p_root);
+
 	if(isNull())
 		pLog::logE(this, pLog::ERROR_NULL, "Responsible distant system null");
-
-	start();
 }
 
 kDistant::~kDistant()
@@ -31,18 +31,24 @@ kDistant::~kDistant()
 		delete m_socket;
 }
 
+void kDistant::setSocket(QTcpSocket* p_socket){
+	m_mutex.lock();
+	m_socket = p_socket;
+	m_mutex.unlock();
+}
+
 bool kDistant::alive()
 {
 	if(!m_socket->isValid()){
-		pLogW(this, pLog::WARNING_NONE, "alive - invalid socket");
+		pLog::logW(this, pLog::WARNING_NONE, "alive - invalid socket");
 		return false;
 	}
-	if(m_end < QTime::currentTime() + 2000){
-		pLogW(this, pLog::WARNING_NONE, "alive - end outdated");
+	if(m_end < QTime::currentTime().addMSecs(2000)){
+		pLog::logW(this, pLog::WARNING_NONE, "alive - end outdated");
 		return false;
 	}
-	if(m_front < QTime::currentTime() + 2000){
-		pLogW(this, pLog::WARNING_NONE, "alive - front outdated");
+	if(m_front < QTime::currentTime().addMSecs(2000)){
+		pLog::logW(this, pLog::WARNING_NONE, "alive - front outdated");
 		return false;
 	}
 	return true;
@@ -53,6 +59,8 @@ bool kDistant::sendMsg(QList<kMsg> p_list)
 	m_mutex.lock();
 	m_sendList.append(p_list);
 	m_mutex.unlock();
+
+	return true;
 }
 
 QList<kMsg> kDistant::getMsg()
@@ -65,9 +73,9 @@ QList<kMsg> kDistant::getMsg()
 	m_mutex.unlock();
 
 	if(isNull())
-		*this = rtn.first().header().receiver();
+		*(kCore*) this = rtn.first().header().receiver();
 
-	if(rtn.removeAll("Alive") > 0)
+	if(rtn.removeAll(kMsg ("Alive", kMsgHeader::INFO)) > 0)
 		m_end = QTime::currentTime();
 
 	return rtn;
@@ -80,7 +88,7 @@ void kDistant::run(){
 		else{
 			m_mutex.lock();
 			//Alive
-			if(QTime::currentTime() - 1000 > m_time){
+			if(QTime::currentTime().addMSecs(-1000) > m_front){
 				kMsg tmp("Alive", kMsgHeader::INFO, *this);
 
 				m_front = QTime::currentTime();
@@ -92,7 +100,7 @@ void kDistant::run(){
 				if(!tmp.outdated())
 					m_socket->write(tmp.toMsg());
 				else
-					pLog::logW(this, pLog::WARNING_NONE, "message outdated, not send")
+					pLog::logW(this, pLog::WARNING_NONE, "message outdated, not send");
 			}
 
 			//Get pending messages

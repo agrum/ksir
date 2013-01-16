@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 	QDomDocument doc;
 	doc.setContent(&file);
-	kServer server(doc);
+	kServer server(doc.firstChild());
 
     return a.exec();
 }

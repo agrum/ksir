@@ -6,7 +6,6 @@ void kXmlBehavior::from(const QDomNode& p_root)
 	while (!n.isNull()){
 		if (n.isElement()){
 			QDomElement e = n.toElement();
-			readXml(e.tagName(), e);
 			if(e.tagName() == XML_FILE)
 				readFile(e.text());
 			else
@@ -28,13 +27,13 @@ void kXmlBehavior::to(QDomNode& p_root, const QString& p_name)
 
 void kXmlBehavior::readFile(const QString& p_filename)
 {
-	QFile lFile(p_filename);
+	QFile file(p_filename);
 
-	if(lFile.exists() && lFile.open(QIODevice::ReadOnly)){
-		QDomDocument lConfig;
-		if(lConfig.setContent(&lFile, true, NULL, NULL, NULL))
-			from(lConfig.documentElement());
-		lFile.close();
+	if(file.exists() && file.open(QIODevice::ReadOnly)){
+		QDomDocument config;
+		if(config.setContent(&file, true))
+			from(config.firstChild());
+		file.close();
 	}
 }
 

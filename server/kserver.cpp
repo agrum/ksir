@@ -3,6 +3,13 @@
 kServer::kServer(const QDomNode& p_root):
 	kCore(p_root)
 {
+	from(p_root);
+	for(int i = 0; i < m_distantList.size(); i++)
+		m_distantList[i]->start();
+
+	qDebug() << m_distantList.size();
+	qDebug() << m_id << m_type;
+
 	start();
 }
 
@@ -37,7 +44,6 @@ void kServer::run()
 //XML
 void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 {
-	kCore::readXml(p_tag, p_node);
 	if(p_tag == XML_DATABASE){
 		m_database.from(p_node);
 		m_database.open();

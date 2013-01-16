@@ -15,10 +15,15 @@ kMsgHeader::kMsgHeader()
 
 }
 
-kMsgHeader::kMsgHeader(const QDomNode& p_root):
-	kXmlBehavior(p_root)
+kMsgHeader::kMsgHeader(Type p_type) :
+	m_type(p_type)
 {
 
+}
+
+kMsgHeader::kMsgHeader(const QDomNode& p_root)
+{
+	from(p_root);
 }
 
 kMsgHeader::kMsgHeader(Type p_type, const kCore& p_receiver) :

@@ -5,10 +5,9 @@ kCore::kCore()
 
 }
 
-kCore::kCore(const QDomNode& p_root):
-	kXmlBehavior(p_root)
+kCore::kCore(const QDomNode& p_root)
 {
-
+	from(p_root);
 }
 
 kCore::kCore(const kCore& p_core):

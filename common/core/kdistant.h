@@ -17,6 +17,7 @@ public:
 	kDistant(const QDomNode&);
 	~kDistant();
 
+	void setSocket(QTcpSocket*);
 	bool alive();
 
 	bool sendMsg(QList<kMsg>);

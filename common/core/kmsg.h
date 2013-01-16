@@ -14,6 +14,7 @@
 class kMsg
 {
 public :
+	kMsg(const QString&, kMsgHeader::Type);
 	kMsg(const QString&, kMsgHeader::Type, const kCore&);
 	kMsg(const kMsg&);
 	kMsg(const QByteArray&);
@@ -28,7 +29,7 @@ public :
 	QString text(const QString& p_node) { return m_info.firstChildElement(p_node).text(); }
 	void add(const QString&, const QString&);
 
-	bool operator==(const QString&);
+	bool operator==(const kMsg&);
 	bool exist(const QString&);
 	bool find(const QString&, QDomNode&);
 	QByteArray toMsg();

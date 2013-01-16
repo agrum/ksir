@@ -13,11 +13,11 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH += /home/agrum/Workspace/pomelog/include \
+INCLUDEPATH += /home/agrum/Workspace/pomelog/src/include \
 	/home/agrum/Workspace/ksir/common/include
 LIBS += -L/home/agrum/Workspace/ksir/build_common/lib \
 	-lksir_common \
-	-L/home/agrum/Workspace/pomelog/lib \
+	-L/home/agrum/Workspace/pomelog/build/lib \
 	-lpomelog
 
 SOURCES += main.cpp \
@@ -28,5 +28,6 @@ HEADERS += kserver.h \
     utils/kdatabase.h
 
 OTHER_FILES += \
-    conf.d/serverlist.conf \
-    conf.d/global.conf
+    conf.d/serverlist.xml \
+    conf.d/global1.xml \
+    conf.d/global2.xml

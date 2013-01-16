@@ -4,6 +4,13 @@
  */
 #include "kmsg.h"
 
+kMsg::kMsg(const QString& p_name, kMsgHeader::Type p_type) :
+	m_info(p_name),
+	m_header(p_type)
+{
+
+}
+
 kMsg::kMsg(const QString& p_name, kMsgHeader::Type p_type, const kCore& p_receiver) :
 	m_time(QTime::currentTime()),
 	m_info(p_name),
@@ -60,9 +67,10 @@ bool kMsg::find(const QString& p_tag, QDomNode& p_node)
 	return false;
 }
 
-bool kMsg::operator ==(const QString& p_name)
+bool kMsg::operator ==(const kMsg& p_msg)
 {
-	return m_info.localName() == p_name;
+	return	m_info.localName() == p_msg.m_info.localName()
+			&& m_header.type() == p_msg.m_header.type();
 }
 
 QByteArray kMsg::toMsg(){

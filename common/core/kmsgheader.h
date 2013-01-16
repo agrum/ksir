@@ -25,6 +25,7 @@ public :
 	};
 
 	kMsgHeader();
+	kMsgHeader(Type);
 	kMsgHeader(const QDomNode&);
 	kMsgHeader(Type, const kCore&);
 	kMsgHeader(const kMsgHeader&);

@@ -12,8 +12,8 @@ TARGET = ksir_common
 TEMPLATE = lib
 DESTDIR = lib
 
-INCLUDEPATH += /home/agrum/Workspace/pomelog/include
-LIBS += -L/home/agrum/Workspace/pomelog/lib \
+INCLUDEPATH += /home/agrum/Workspace/pomelog/src/include
+LIBS += -L/home/agrum/Workspace/pomelog/build/lib \
 	-lpomelog \
 
 SOURCES += utils/kxmlbehavior.cpp \
