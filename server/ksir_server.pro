@@ -22,10 +22,12 @@ LIBS += -L/home/agrum/Workspace/ksir/build_common/lib \
 
 SOURCES += main.cpp \
 	kserver.cpp \
-    utils/kdatabase.cpp
+    utils/kdatabase.cpp \
+    utils/ktcpserver.cpp
 
 HEADERS += kserver.h \
-    utils/kdatabase.h
+    utils/kdatabase.h \
+    utils/ktcpserver.h
 
 OTHER_FILES += \
     conf.d/serverlist.xml \

@@ -10,6 +10,7 @@
 
 #include "ksir_common.h"
 #include "utils/kdatabase.h"
+#include "utils/ktcpserver.h"
 
 class kServer : public kCore, public QThread
 {
@@ -24,7 +25,7 @@ public:
 
 private:
 	kDatabase m_database;
-	QTcpServer m_tcpServer;
+	kTcpServer m_tcpServer;
 	QList <kDistant*> m_distantList;
 };
 

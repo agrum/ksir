@@ -13,13 +13,13 @@
 class kDistant : public kCore, public QThread, public pLogBehavior
 {
 public:
-	kDistant(QTcpSocket*);
+	kDistant(int);
 	kDistant(const QDomNode&);
 	~kDistant();
 
-	void setSocket(QTcpSocket*);
-	bool alive();
+	int port() const { return m_port; }
 
+	bool alive();
 	bool sendMsg(QList<kMsg>);
 	QList<kMsg> getMsg();
 
@@ -44,6 +44,7 @@ private:
 	QMutex m_mutex;
 
 	bool m_responsible;
+	int m_socketDesc;
 	QTcpSocket* m_socket;
 };
 
