@@ -2,6 +2,7 @@
 
 kDistant::kDistant(int p_socketDesc):
 	pLogBehavior("kDistant"),
+	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(false),
 	m_socketDesc(p_socketDesc),
@@ -13,6 +14,7 @@ kDistant::kDistant(int p_socketDesc):
 kDistant::kDistant(const QDomNode& p_root):
 	kCore(p_root),
 	pLogBehavior("kDistant"),
+	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(true),
 	m_socket(NULL)
@@ -20,7 +22,7 @@ kDistant::kDistant(const QDomNode& p_root):
 	from(p_root);
 
 	if(isNull())
-		pLog::logE(this, pLog::ERROR_NULL, "Responsible distant system null");
+		logE(pLog::ERROR_NULL, "Responsible distant system null");
 }
 
 kDistant::~kDistant()
@@ -36,7 +38,7 @@ bool kDistant::alive()
 	if(m_socket->state() != QAbstractSocket::ConnectedState){
 		if(m_connected){
 			m_connected = false;
-			pLog::logI(this, pLog::INFO_NONE,
+			logI(pLog::INFO_NONE,
 				   QString("system lost : %1 %2").arg(m_id).arg(m_port));
 		}
 		if(m_responsible){
@@ -50,11 +52,13 @@ bool kDistant::alive()
 				m_mutex.unlock();
 			}
 		}
+		else //Will never be used anyway
+			m_mustDestroy = true;
 	}
 
 	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
 		m_connected = true;
-		pLog::logI(this, pLog::INFO_NONE,
+		logI(pLog::INFO_NONE,
 				   QString("system joined : %1 %2").arg(m_id).arg(m_port));
 	}
 
@@ -81,7 +85,16 @@ QList<kMsg> kDistant::getMsg()
 
 	if(!rtn.empty() && isNull()){
 		*(kCore*) this = rtn.first().header().sender();
-		pLog::logI(this, pLog::INFO_NONE,
+		if(m_id == "" && m_type == "client"){ //Give an unique name to the client
+			m_id = rtn.first().header().receiver().id() + "_" + QTime::currentTime().toString();
+
+			kMsg aliveMsg("GotYourName", kMsgHeader::INFO, *this);
+
+			m_mutex.lock();
+			m_sendList.push_back(aliveMsg);
+			m_mutex.unlock();
+		}
+		logI(pLog::INFO_NONE,
 				   QString("system name acquired %1 %2").arg(m_id).arg(m_port));
 	}
 
@@ -106,7 +119,7 @@ void kDistant::run(){
 					m_socket->waitForBytesWritten(100);
 				}
 				else
-					pLog::logW(this, pLog::WARNING_NONE, "message outdated, not send");
+					logW(pLog::WARNING_NONE, "message outdated, not send");
 			}
 
 			//Get pending messages

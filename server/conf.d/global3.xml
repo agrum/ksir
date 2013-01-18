@@ -1,5 +1,5 @@
 <global>
-	<id>rubbup</id>
+	<id>rubbupServ</id>
 	<type>server</type>
 	<file>/home/agrum/Workspace/ksir/common/conf.d/serverlist.xml</file>
 </global>

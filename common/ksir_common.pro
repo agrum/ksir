@@ -28,3 +28,6 @@ HEADERS += utils/kxmlbehavior.h \
 	core/kmsgheader.h \
     include/ksir_common.h \
     core/kdistant.h
+
+OTHER_FILES += \
+    conf.d/serverlist.xml

@@ -1,5 +1,4 @@
 <global>
-	<id>kwainServ</id>
-	<type>server</type>
+	<type>client</type>
 	<file>/home/agrum/Workspace/ksir/common/conf.d/serverlist.xml</file>
 </global>

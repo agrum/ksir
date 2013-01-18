@@ -73,6 +73,12 @@ bool kMsg::operator ==(const kMsg& p_msg)
 			&& m_header.type() == p_msg.m_header.type();
 }
 
+bool kMsg::is(const QString& p_localName, const kMsgHeader::Type p_type)
+{
+	return	m_info.localName() == p_localName
+			&& m_header.type() == p_type;
+}
+
 QByteArray kMsg::toMsg(){
 	QDomNode node = m_info.cloneNode();
 	QDomDocument rtn = node.toDocument();

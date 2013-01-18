@@ -32,7 +32,7 @@ void kServer::run()
 		for(int i = 0; i < m_distantList.size(); i++){
 			kDistant* tmp = m_distantList[i];
 
-			if(!tmp->isNull() && distantList.contains(*tmp))
+			if(tmp->mustDestroy())
 				delete m_distantList.takeAt(i--);
 			else
 				distantList.push_back(*tmp);

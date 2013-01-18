@@ -18,6 +18,7 @@ public:
 	~kDistant();
 
 	int port() const { return m_port; }
+	bool mustDestroy() const { return m_mustDestroy; }
 
 	bool alive();
 	bool sendMsg(QList<kMsg>);
@@ -43,6 +44,7 @@ private:
 	QList <kMsg> m_receiveList;
 	QMutex m_mutex;
 
+	bool m_mustDestroy;
 	bool m_connected;
 	bool m_responsible;
 	int m_socketDesc;

@@ -30,6 +30,7 @@ public :
 	void add(const QString&, const QString&);
 
 	bool operator==(const kMsg&);
+	bool is(const QString&, const kMsgHeader::Type);
 	bool exist(const QString&);
 	bool find(const QString&, QDomNode&);
 	QByteArray toMsg();

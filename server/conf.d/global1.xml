@@ -1,5 +1,5 @@
 <global>
-	<id>bleh</id>
+	<id>blehServ</id>
 	<type>server</type>
 	<file>/home/agrum/Workspace/ksir/common/conf.d/serverlist.xml</file>
 </global>

@@ -82,7 +82,7 @@
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration" type="int">0</value>
-    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/build/server</value>
+    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/build_client</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.QtVersionId" type="int">2</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.ToolChain" type="QString">ProjectExplorer.ToolChain.Gcc:/usr/bin/g++.x86-linux-generic-elf-32bit.</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild" type="bool">true</value>
@@ -132,10 +132,10 @@
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration" type="int">2</value>
-    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/server</value>
+    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/ksir_client-build-desktop</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.QtVersionId" type="int">2</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.ToolChain" type="QString">ProjectExplorer.ToolChain.Gcc:/usr/bin/g++.x86-linux-generic-elf-32bit.</value>
-    <value key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild" type="bool">false</value>
+    <value key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild" type="bool">true</value>
    </valuemap>
    <valuemap key="ProjectExplorer.Target.BuildConfiguration.2" type="QVariantMap">
     <value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">ProjectExplorer.ToolChain.Gcc:/usr/bin/g++.x86-linux-generic-elf-32bit.</value>
@@ -182,7 +182,7 @@
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration" type="int">0</value>
-    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/build_server</value>
+    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/ksir_client-build-desktop</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.QtVersionId" type="int">3</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.ToolChain" type="QString">ProjectExplorer.ToolChain.Gcc:/usr/bin/g++.x86-linux-generic-elf-32bit.</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild" type="bool">true</value>
@@ -232,7 +232,7 @@
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration" type="int">2</value>
-    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/build_server</value>
+    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/agrum/Workspace/ksir/build_client</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.QtVersionId" type="int">3</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.ToolChain" type="QString">ProjectExplorer.ToolChain.Gcc:/usr/bin/g++.x86-linux-generic-elf-32bit.</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild" type="bool">true</value>
@@ -275,12 +275,12 @@
      <value type="int">13</value>
      <value type="int">14</value>
     </valuelist>
-    <value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">ksir_server</value>
+    <value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">ksir_client</value>
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4RunConfiguration</value>
     <value key="Qt4ProjectManager.Qt4RunConfiguration.BaseEnvironmentBase" type="int">2</value>
-    <value key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments" type="QString">/home/agrum/Workspace/ksir/server/conf.d/global1.xml</value>
-    <value key="Qt4ProjectManager.Qt4RunConfiguration.ProFile" type="QString">ksir_server.pro</value>
+    <value key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments" type="QString">/home/agrum/Workspace/ksir/client/conf.d/global1.xml</value>
+    <value key="Qt4ProjectManager.Qt4RunConfiguration.ProFile" type="QString">ksir_client.pro</value>
     <value key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix" type="bool">false</value>
     <value key="Qt4ProjectManager.Qt4RunConfiguration.UseTerminal" type="bool">false</value>
     <valuelist key="Qt4ProjectManager.Qt4RunConfiguration.UserEnvironmentChanges" type="QVariantList">
