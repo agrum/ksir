@@ -13,8 +13,8 @@
 class kDistant : public kCore, public QThread, public pLogBehavior
 {
 public:
-	kDistant(const kCore*, int);
-	kDistant(const kCore*, const QDomNode&);
+	kDistant(int);
+	kDistant(const QDomNode&);
 	~kDistant();
 
 	int port() const { return m_port; }
@@ -34,8 +34,6 @@ private:
 	kDistant& operator=(const kDistant&) { return *this; }
 
 private:
-	const kCore* m_core;
-
 	QString m_addr;
 	int m_port;
 	QTime m_time;

@@ -7,16 +7,19 @@
 
 #include "kmsgheader.h"
 
+kCore kMsgHeader::m_core;
 unsigned int kMsgHeader::m_idCount = 0;
 QMutex kMsgHeader::m_mutex;
 
-kMsgHeader::kMsgHeader()
+kMsgHeader::kMsgHeader():
+	m_sender(m_core)
 {
 
 }
 
 kMsgHeader::kMsgHeader(Type p_type) :
-	m_type(p_type)
+	m_type(p_type),
+	m_sender(m_core)
 {
 
 }
@@ -28,6 +31,7 @@ kMsgHeader::kMsgHeader(const QDomNode& p_root)
 
 kMsgHeader::kMsgHeader(Type p_type, const kCore& p_receiver) :
 	m_type(p_type),
+	m_sender(m_core),
 	m_receiver(p_receiver)
 {
 	m_mutex.lock();
@@ -79,6 +83,7 @@ QString kMsgHeader::print(QString p_blank){
 	Result += p_blank + "type : " + m_type + "\n";
 	Result += p_blank + "msgId : " + QString("%1").arg(m_id) + "\n";
 	Result += p_blank + "sender : " + m_sender.type() + "\n";
+	Result += p_blank + "senderId : " + m_sender.id() + "\n";
 	Result += p_blank + "receiver : " + m_receiver.type() + "\n";
 	Result += p_blank + "receiverId : " + m_receiver.id() + "\n";
 

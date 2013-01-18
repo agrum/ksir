@@ -1,8 +1,7 @@
 #include "kdistant.h"
 
-kDistant::kDistant(const kCore* p_core, int p_socketDesc):
+kDistant::kDistant(int p_socketDesc):
 	pLogBehavior("kDistant"),
-	m_core(p_core),
 	m_connected(false),
 	m_responsible(false),
 	m_socketDesc(p_socketDesc),
@@ -11,10 +10,9 @@ kDistant::kDistant(const kCore* p_core, int p_socketDesc):
 	start();
 }
 
-kDistant::kDistant(const kCore* p_core, const QDomNode& p_root):
+kDistant::kDistant(const QDomNode& p_root):
 	kCore(p_root),
 	pLogBehavior("kDistant"),
-	m_core(p_core),
 	m_connected(false),
 	m_responsible(true),
 	m_socket(NULL)
@@ -39,7 +37,7 @@ bool kDistant::alive()
 		if(m_connected){
 			m_connected = false;
 			pLog::logI(this, pLog::INFO_NONE,
-				   QString("system lost %1 %2").arg(m_id).arg(m_port));
+				   QString("system lost : %1 %2").arg(m_id).arg(m_port));
 		}
 		if(m_responsible){
 			m_socket->abort();
@@ -57,7 +55,7 @@ bool kDistant::alive()
 	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
 		m_connected = true;
 		pLog::logI(this, pLog::INFO_NONE,
-				   QString("system joined %1 %2").arg(m_id).arg(m_port));
+				   QString("system joined : %1 %2").arg(m_id).arg(m_port));
 	}
 
 	return m_socket->state() == QAbstractSocket::ConnectedState;
@@ -103,8 +101,8 @@ void kDistant::run(){
 			while(!m_sendList.empty()){
 				kMsg tmp = m_sendList.takeFirst();
 				if(!tmp.outdated()){
-					//qDebug() << "write\n" << tmp.toMsg(*m_core);
-					m_socket->write(tmp.toMsg(*m_core));
+					//qDebug() << "write\n" << tmp.toMsg();
+					m_socket->write(tmp.toMsg());
 					m_socket->waitForBytesWritten(100);
 				}
 				else

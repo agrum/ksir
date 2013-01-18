@@ -1,0 +1,20 @@
+<serverlist>
+	<server>
+		<id>bleh</id>
+		<type>server</type>
+		<address>localhost</address>
+		<port>10201</port>
+	</server>
+	<server>
+		<id>kwain</id>
+		<type>server</type>
+		<address>localhost</address>
+		<port>10202</port>
+	</server>
+	<server>
+		<id>rubbup</id>
+		<type>server</type>
+		<address>localhost</address>
+		<port>10203</port>
+	</server>
+</serverlist>

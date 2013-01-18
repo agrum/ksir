@@ -32,7 +32,7 @@ public :
 	bool operator==(const kMsg&);
 	bool exist(const QString&);
 	bool find(const QString&, QDomNode&);
-	QByteArray toMsg(const kCore&);
+	QByteArray toMsg();
 	QString print(QString);
 
 protected :

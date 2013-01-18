@@ -36,7 +36,7 @@ public :
 	const kCore sender() const { return m_sender; }
 	const kCore receiver() const { return m_receiver; }
 
-	void setSender(const kCore& p_sender) { m_sender = p_sender; }
+	static void setSender(const kCore& p_sender) { m_core = p_sender; }
 
 	//XML
 	void readXml(const QString&, const QDomElement&);
@@ -45,6 +45,7 @@ public :
 	QString print(QString);
 
 private :
+	static kCore m_core;
 	static unsigned int m_idCount;
 	static QMutex m_mutex;
 

@@ -73,11 +73,10 @@ bool kMsg::operator ==(const kMsg& p_msg)
 			&& m_header.type() == p_msg.m_header.type();
 }
 
-QByteArray kMsg::toMsg(const kCore& p_sender){
+QByteArray kMsg::toMsg(){
 	QDomNode node = m_info.cloneNode();
 	QDomDocument rtn = node.toDocument();
 
-	m_header.setSender(p_sender);
 	m_header.to(rtn, "Header");
 	return rtn.toByteArray();
 }
