@@ -22,7 +22,8 @@ void kServer::run()
 
 	while(!err){
 		if(m_tcpServer.hasSocketDesc()){
-			kDistant* tmp = new kDistant(m_tcpServer.socketDesc());
+			qDebug() << "lalala";
+			kDistant* tmp = new kDistant(this, m_tcpServer.socketDesc());
 			m_distantList.push_front(tmp);
 		}
 
@@ -52,12 +53,14 @@ void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 		m_database.open();
 	}
 	else if(p_tag == XML_SERVER){
-		kDistant* tmp = new kDistant(p_node);
-		m_distantList.push_back(tmp);
-		if(*(m_distantList.last()) == *this){ //Either connect with all because unknown from all
-			qDebug() << m_tcpServer.listen(QHostAddress::Any, m_distantList.last()->port()) << m_distantList.last()->port();
-			m_distantList.clear();	//Either connect the subset after it to avoid double
+		kDistant* tmp = new kDistant(this, p_node);
+		if(*tmp == *this){
+			qDebug() << m_tcpServer.listen(QHostAddress::Any, tmp->port()) << tmp->port();
+			while(!m_distantList.empty())
+				delete m_distantList.takeFirst();
 		}
+		else
+			m_distantList.push_back(tmp);
 	}
 
 }

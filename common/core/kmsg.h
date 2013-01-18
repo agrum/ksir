@@ -32,13 +32,15 @@ public :
 	bool operator==(const kMsg&);
 	bool exist(const QString&);
 	bool find(const QString&, QDomNode&);
-	QByteArray toMsg();
+	QByteArray toMsg(const kCore&);
 	QString print(QString);
 
 protected :
 	QTime m_time;
 	QDomDocument m_info;
 	kMsgHeader m_header;
+
+	QByteArray m_content;
 };
 
 

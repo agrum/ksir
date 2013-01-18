@@ -31,9 +31,12 @@ public :
 	kMsgHeader(const kMsgHeader&);
 	kMsgHeader& operator=(const kMsgHeader&);
 
-	Type type() const { return m_type; }
-	const kCore receiver() const { return m_receiver; }
 	int id() const { return m_id; }
+	Type type() const { return m_type; }
+	const kCore sender() const { return m_sender; }
+	const kCore receiver() const { return m_receiver; }
+
+	void setSender(const kCore& p_sender) { m_sender = p_sender; }
 
 	//XML
 	void readXml(const QString&, const QDomElement&);
@@ -47,6 +50,7 @@ private :
 
 	unsigned int m_id;
 	Type m_type;
+	kCore m_sender;
 	kCore m_receiver;
 };
 

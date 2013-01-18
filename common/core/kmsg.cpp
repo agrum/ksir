@@ -30,7 +30,6 @@ kMsg::kMsg(const kMsg& p_info) :
 kMsg::kMsg(const QByteArray& p_buffer):
 	m_time(QTime::currentTime())
 {
-	qDebug() << p_buffer;
 	m_info.setContent(p_buffer);
 	m_header.from(m_info.firstChildElement("Header"));
 }
@@ -74,8 +73,11 @@ bool kMsg::operator ==(const kMsg& p_msg)
 			&& m_header.type() == p_msg.m_header.type();
 }
 
-QByteArray kMsg::toMsg(){
-	QDomDocument rtn(m_info);
+QByteArray kMsg::toMsg(const kCore& p_sender){
+	QDomNode node = m_info.cloneNode();
+	QDomDocument rtn = node.toDocument();
+
+	m_header.setSender(p_sender);
 	m_header.to(rtn, "Header");
 	return rtn.toByteArray();
 }

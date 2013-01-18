@@ -39,6 +39,7 @@ kMsgHeader::kMsgHeader(const kMsgHeader& p_header) :
 	kXmlBehavior(),
 	m_id(p_header.m_id),
 	m_type(p_header.m_type),
+	m_sender(p_header.m_sender),
 	m_receiver(p_header.m_receiver)
 {
 
@@ -47,6 +48,7 @@ kMsgHeader::kMsgHeader(const kMsgHeader& p_header) :
 kMsgHeader& kMsgHeader::operator=(const kMsgHeader& p_header){
 	m_id = p_header.m_id;
 	m_type = p_header.m_type;
+	m_sender = p_header.m_sender;
 	m_receiver = p_header.m_receiver;
 
 	return *this;
@@ -57,6 +59,8 @@ void kMsgHeader::readXml(const QString& p_tag, const QDomElement& p_node){
 		m_id = p_node.text().toInt();
 	else if(p_tag == XML_TYPE)
 		m_type = (kMsgHeader::Type) p_node.text().toInt();
+	else if(p_tag == XML_ALICE)
+		m_sender.from(p_node);
 	else if(p_tag == XML_BOB)
 		m_receiver.from(p_node);
 }
@@ -64,6 +68,7 @@ void kMsgHeader::readXml(const QString& p_tag, const QDomElement& p_node){
 void kMsgHeader::writeXml(QDomNode& p_tag){
 	addToElement(p_tag, XML_ID, m_id);
 	addToElement(p_tag, XML_TYPE, m_type);
+	m_sender.to(p_tag, XML_ALICE);
 	m_receiver.to(p_tag, XML_BOB);
 }
 
@@ -73,6 +78,7 @@ QString kMsgHeader::print(QString p_blank){
 	p_blank += " ";
 	Result += p_blank + "type : " + m_type + "\n";
 	Result += p_blank + "msgId : " + QString("%1").arg(m_id) + "\n";
+	Result += p_blank + "sender : " + m_sender.type() + "\n";
 	Result += p_blank + "receiver : " + m_receiver.type() + "\n";
 	Result += p_blank + "receiverId : " + m_receiver.id() + "\n";
 
