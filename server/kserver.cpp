@@ -54,7 +54,14 @@ void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 	else if(p_tag == XML_SERVER){
 		kDistant* tmp = new kDistant(this, p_node);
 		if(*tmp == *this){
-			qDebug() << m_tcpServer.listen(QHostAddress::Any, tmp->port()) << tmp->port();
+			qDebug() << "Server " << m_id;
+			qDebug() << "Try listening on port " << tmp->port() << "...";
+			if(m_tcpServer.listen(QHostAddress::Any, tmp->port()))
+				qDebug() << "Succes";
+			else {
+				qDebug() << "Fail";
+				abort();
+			}
 			while(!m_distantList.empty())
 				delete m_distantList.takeFirst();
 		}

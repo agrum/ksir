@@ -3,7 +3,6 @@
 kDistant::kDistant(const kCore* p_core, int p_socketDesc):
 	pLogBehavior("kDistant"),
 	m_core(p_core),
-	m_time(QTime::currentTime()),
 	m_connected(false),
 	m_responsible(false),
 	m_socketDesc(p_socketDesc),
@@ -16,7 +15,6 @@ kDistant::kDistant(const kCore* p_core, const QDomNode& p_root):
 	kCore(p_root),
 	pLogBehavior("kDistant"),
 	m_core(p_core),
-	m_time(QTime::currentTime()),
 	m_connected(false),
 	m_responsible(true),
 	m_socket(NULL)
@@ -37,8 +35,7 @@ kDistant::~kDistant()
 
 bool kDistant::alive()
 {
-	if(m_time < QTime::currentTime().addMSecs(-10000)
-			|| m_socket->state() != QAbstractSocket::ConnectedState){
+	if(m_socket->state() != QAbstractSocket::ConnectedState){
 		if(m_connected){
 			m_connected = false;
 			pLog::logI(this, pLog::INFO_NONE,
@@ -48,9 +45,7 @@ bool kDistant::alive()
 			m_socket->abort();
 			m_socket->connectToHost(m_addr, m_port);
 			if(m_socket->waitForConnected(1000)){
-				kMsg aliveMsg("Alive", kMsgHeader::INFO, *this);
-
-				m_time = QTime::currentTime();
+				kMsg aliveMsg("Hello", kMsgHeader::INFO, *this);
 
 				m_mutex.lock();
 				m_sendList.push_back(aliveMsg);
@@ -92,15 +87,6 @@ QList<kMsg> kDistant::getMsg()
 				   QString("system name acquired %1 %2").arg(m_id).arg(m_port));
 	}
 
-	kMsg aliveMsg("Alive", kMsgHeader::INFO, *this);
-	if(rtn.removeAll(aliveMsg) > 0){
-		m_time = QTime::currentTime();
-
-		m_mutex.lock();
-		m_sendList.push_back(aliveMsg);
-		m_mutex.unlock();
-	}
-
 	return rtn;
 }
 
@@ -111,9 +97,6 @@ void kDistant::run(){
 	}
 
 	while(true){
-		/*qDebug() << m_socket->localAddress() << m_socket->localPort()
-				 << m_socket->readBufferSize() << m_socket->state()
-				 << m_socket->bytesAvailable();*/
 		if(alive()){
 			m_mutex.lock();
 			//Send outgoing messages
