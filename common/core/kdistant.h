@@ -45,6 +45,7 @@ private:
 	QList <kMsg> m_receiveList;
 	QMutex m_mutex;
 
+	bool m_connected;
 	bool m_responsible;
 	int m_socketDesc;
 	QTcpSocket* m_socket;

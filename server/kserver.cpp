@@ -22,7 +22,6 @@ void kServer::run()
 
 	while(!err){
 		if(m_tcpServer.hasSocketDesc()){
-			qDebug() << "lalala";
 			kDistant* tmp = new kDistant(this, m_tcpServer.socketDesc());
 			m_distantList.push_front(tmp);
 		}
@@ -32,7 +31,7 @@ void kServer::run()
 			kDistant* tmp = m_distantList[i];
 
 			if(!tmp->isNull() && distantList.contains(*tmp))
-				m_distantList.removeAt(i--);
+				delete m_distantList.takeAt(i--);
 			else
 				distantList.push_back(*tmp);
 		}

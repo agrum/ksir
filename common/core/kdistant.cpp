@@ -4,6 +4,7 @@ kDistant::kDistant(const kCore* p_core, int p_socketDesc):
 	pLogBehavior("kDistant"),
 	m_core(p_core),
 	m_time(QTime::currentTime()),
+	m_connected(false),
 	m_responsible(false),
 	m_socketDesc(p_socketDesc),
 	m_socket(NULL)
@@ -16,6 +17,7 @@ kDistant::kDistant(const kCore* p_core, const QDomNode& p_root):
 	pLogBehavior("kDistant"),
 	m_core(p_core),
 	m_time(QTime::currentTime()),
+	m_connected(false),
 	m_responsible(true),
 	m_socket(NULL)
 {
@@ -37,8 +39,11 @@ bool kDistant::alive()
 {
 	if(m_time < QTime::currentTime().addMSecs(-10000)
 			|| m_socket->state() != QAbstractSocket::ConnectedState){
-		pLog::logW(this, pLog::WARNING_NONE,
-				   QString("system outdated %1 %2").arg(m_id).arg(m_port));
+		if(m_connected){
+			m_connected = false;
+			pLog::logI(this, pLog::INFO_NONE,
+				   QString("system lost %1 %2").arg(m_id).arg(m_port));
+		}
 		if(m_responsible){
 			m_socket->abort();
 			m_socket->connectToHost(m_addr, m_port);
@@ -50,9 +55,14 @@ bool kDistant::alive()
 				m_mutex.lock();
 				m_sendList.push_back(aliveMsg);
 				m_mutex.unlock();
-				qDebug() << "lololo";
 			}
 		}
+	}
+
+	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
+		m_connected = true;
+		pLog::logI(this, pLog::INFO_NONE,
+				   QString("system joined %1 %2").arg(m_id).arg(m_port));
 	}
 
 	return m_socket->state() == QAbstractSocket::ConnectedState;
@@ -78,6 +88,8 @@ QList<kMsg> kDistant::getMsg()
 
 	if(!rtn.empty() && isNull()){
 		*(kCore*) this = rtn.first().header().sender();
+		pLog::logI(this, pLog::INFO_NONE,
+				   QString("system name acquired %1 %2").arg(m_id).arg(m_port));
 	}
 
 	kMsg aliveMsg("Alive", kMsgHeader::INFO, *this);
@@ -108,7 +120,7 @@ void kDistant::run(){
 			while(!m_sendList.empty()){
 				kMsg tmp = m_sendList.takeFirst();
 				if(!tmp.outdated()){
-					qDebug() << "write\n" << tmp.toMsg(*m_core);
+					//qDebug() << "write\n" << tmp.toMsg(*m_core);
 					m_socket->write(tmp.toMsg(*m_core));
 					m_socket->waitForBytesWritten(100);
 				}
@@ -123,7 +135,7 @@ void kDistant::run(){
 				m_msgStack += line;
 
 				if(line.left(9) == "</Header>"){
-					qDebug() << "read\n" << m_msgStack;
+					//qDebug() << "read\n" << m_msgStack;
 					kMsg tmp(m_msgStack);
 					m_receiveList.push_back(kMsg (m_msgStack));
 					m_msgStack.clear();
