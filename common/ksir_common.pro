@@ -20,14 +20,16 @@ SOURCES += utils/kxmlbehavior.cpp \
 	core/kcore.cpp \
 	core/kmsg.cpp \
 	core/kmsgheader.cpp \
-    core/kdistant.cpp
+    core/kdistant.cpp \
+    utils/kcommonlogextension.cpp
 
 HEADERS += utils/kxmlbehavior.h \
 	core/kcore.h \
 	core/kmsg.h \
 	core/kmsgheader.h \
     include/ksir_common.h \
-    core/kdistant.h
+    core/kdistant.h \
+	utils/kcommonlogextension.h
 
 OTHER_FILES += \
     conf.d/serverlist.xml

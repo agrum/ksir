@@ -31,10 +31,15 @@ void kXmlBehavior::readFile(const QString& p_filename)
 
 	if(file.exists() && file.open(QIODevice::ReadOnly)){
 		QDomDocument config;
-		if(config.setContent(&file, true))
+		if(config.setContent(&file, true)){
 			from(config.firstChild());
+		}
+		else
+			qDebug() << "kXmlBehavior::readFile() : corrupted for : " << p_filename;
 		file.close();
 	}
+	else
+		qDebug() << "kXmlBehavior::readFile() : problem for " << p_filename;
 }
 
 void kXmlBehavior::addToElement(QDomNode& p_root, const QString& p_tag , const QString& p_value)

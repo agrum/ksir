@@ -84,6 +84,8 @@ QByteArray kMsg::toMsg(){
 	QDomDocument rtn = node.toDocument();
 
 	m_header.to(rtn, "Header");
+
+	qDebug() << rtn.toByteArray();
 	return rtn.toByteArray();
 }
 

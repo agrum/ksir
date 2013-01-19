@@ -1,0 +1,6 @@
+<global>
+	<database>
+		<host>localhost</host>
+		<dbname>ksir</dbname>
+	</database>
+</global>

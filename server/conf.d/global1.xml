@@ -1,5 +1,6 @@
 <global>
 	<id>blehServ</id>
 	<type>server</type>
+	<file>/home/agrum/Workspace/ksir/server/conf.d/database.xml</file>
 	<file>/home/agrum/Workspace/ksir/common/conf.d/serverlist.xml</file>
 </global>

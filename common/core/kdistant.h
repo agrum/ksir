@@ -7,6 +7,7 @@
 #include <QTime>
 #include "pomelog.h"
 
+#include "../utils/kcommonlogextension.h"
 #include "kcore.h"
 #include "kmsg.h"
 

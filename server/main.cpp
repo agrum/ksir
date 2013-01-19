@@ -4,10 +4,11 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+	QCoreApplication a(argc, argv);
 
 	pLog::init("ksir.log", pLog::ALL);
 	pLog::sign((void*) 1, "main()");
+	kCommonLogExtension::extendPomelog();
 
 	QString confFile = QString(argv[1]);
 	QFile file(confFile);
@@ -21,5 +22,5 @@ int main(int argc, char *argv[])
 	doc.setContent(&file);
 	kServer server(doc.firstChild());
 
-    return a.exec();
+	return a.exec();
 }
