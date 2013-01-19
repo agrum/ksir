@@ -33,8 +33,12 @@ void kXmlBehavior::readFile(const QString& p_filename)
 		QDomDocument config;
 		if(config.setContent(&file, true))
 			from(config.firstChild());
+		else
+			qDebug() << "kXmlBehavior::readFile() : parsing error " + p_filename;
 		file.close();
 	}
+	else
+		qDebug() << "kXmlBehavior::readFile() : can't open " + p_filename;
 }
 
 void kXmlBehavior::addToElement(QDomNode& p_root, const QString& p_tag , const QString& p_value)

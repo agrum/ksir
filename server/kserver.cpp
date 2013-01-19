@@ -51,7 +51,7 @@ void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 {
 	if(p_tag == XML_DATABASE){
 		m_database.from(p_node);
-		m_database.open();
+		m_database.login();
 	}
 	else if(p_tag == XML_SERVER){
 		kDistant* tmp = new kDistant(p_node);

@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 
 	pLog::init("ksir.log", pLog::ALL);
 	pLog::sign((void*) 1, "main()");
+	kCommonLogExtension::extendPomelog();
 
 	QString confFile = QString(argv[1]);
 	QFile file(confFile);
