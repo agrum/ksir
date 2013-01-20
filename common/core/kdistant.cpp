@@ -38,7 +38,7 @@ bool kDistant::alive()
 	if(m_socket->state() != QAbstractSocket::ConnectedState){
 		if(m_connected){
 			m_connected = false;
-			logI(kCommonLogExtension::INFO_K_LOST,
+			logI(kCommonLogExtension::INFO_LOST,
 				   QString("%1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
 		}
 		if(m_responsible){
@@ -58,7 +58,7 @@ bool kDistant::alive()
 
 	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
 		m_connected = true;
-		logI(kCommonLogExtension::INFO_K_JOINED,
+		logI(kCommonLogExtension::INFO_JOINED,
 				   QString("%1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
 	}
 
@@ -94,7 +94,7 @@ QList<kMsg> kDistant::getMsg()
 			m_sendList.push_back(aliveMsg);
 			m_mutex.unlock();
 		}
-		logI(kCommonLogExtension::INFO_K_NAME,
+		logI(kCommonLogExtension::INFO_NAME,
 				   QString("acquired %1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
 	}
 
@@ -119,7 +119,7 @@ void kDistant::run(){
 					m_socket->waitForBytesWritten(100);
 				}
 				else
-					logW(pLog::WARNING_NONE, "message outdated, not send");
+					logW(kCommonLogExtension::WARNING_OUTDATED, "Not send");
 			}
 
 			//Get pending messages

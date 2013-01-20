@@ -5,15 +5,20 @@
 #include <QString>
 #include <QSqlDatabase>
 #include "ksir_common.h"
+#include "pomelog.h"
 
+#ifdef WIN32
+
+#elif unix
 #include <iostream>
 #include <string>
 #include <termios.h>
 #include <unistd.h>
+#endif
 
 using namespace std;
 
-class kDatabase : public QSqlDatabase, public kXmlBehavior
+class kDatabase : public QSqlDatabase, public kXmlBehavior, public pLogBehavior
 {
 public:
     kDatabase();

@@ -33,6 +33,5 @@ OTHER_FILES += \
     conf.d/serverlist.xml \
     conf.d/global1.xml \
     conf.d/global2.xml \
-    conf.d/global3.xml \
-    database.xml \
+	conf.d/global3.xml \
     conf.d/database.xml

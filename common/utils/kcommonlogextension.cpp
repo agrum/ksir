@@ -6,7 +6,8 @@ void kCommonLogExtension::extendPomelog()
 
 	msgMap.insert(110, "System lost");
 	msgMap.insert(111, "System joined");
-	msgMap.insert(112, "System name");
+	msgMap.insert(112, "System named");
+	msgMap.insert(310, "Outdated");
 
 	pLog::extendMap(msgMap);
 }

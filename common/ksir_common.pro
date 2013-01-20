@@ -28,7 +28,7 @@ HEADERS += utils/kxmlbehavior.h \
 	core/kmsg.h \
 	core/kmsgheader.h \
     include/ksir_common.h \
-    core/kdistant.h \
+	core/kdistant.h \
 	utils/kcommonlogextension.h
 
 OTHER_FILES += \

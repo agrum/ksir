@@ -10,6 +10,7 @@
 #include "../utils/kcommonlogextension.h"
 #include "kcore.h"
 #include "kmsg.h"
+#include "../utils/kcommonlogextension.h"
 
 class kDistant : public kCore, public QThread, public pLogBehavior
 {
