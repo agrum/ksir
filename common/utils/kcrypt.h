@@ -25,6 +25,11 @@ public:
 	QByteArray blur(const QByteArray&);
 	QByteArray clear(const QByteArray&);
 
+private:
+	QByteArray blurBlock(char*);
+	QByteArray clearBlock(char*);
+
+private:
 	int m_id;
 	QByteArray m_passphrase;
 	QList<char> m_kernel;

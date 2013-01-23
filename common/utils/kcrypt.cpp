@@ -36,3 +36,32 @@ QByteArray kCrypt::clear(const QByteArray&)
 {
 
 }
+
+/*
+  00 -> 255
+  09 -> 254
+  10 -> 253
+  13 -> 252
+  */
+
+QByteArray kCrypt::blurBlock(char* p_block){
+	QByteArray rtn(256, (char) 255);
+
+	for (int i = 0; p_block[i] != 0; i++){
+		char tmp = p_block[i];
+		if(tmp == 09)
+			tmp = (char) 254;
+		else if(tmp == 10)
+			tmp = (char) 253;
+		else if(tmp == 13)
+			tmp = (char) 252;
+		tmp += m_blurKey[i];
+		rtn[m_kernel[i]] = tmp;
+	}
+
+	return rtn;
+}
+
+QByteArray kCrypt::clearBlock(char*){
+
+}
