@@ -37,17 +37,11 @@ QByteArray kCrypt::clear(const QByteArray&)
 
 }
 
-/*
-  00 -> 255
-  09 -> 254
-  10 -> 253
-  13 -> 252
-  */
-
 QByteArray kCrypt::blurBlock(char* p_block){
 	QByteArray rtn(256, (char) 255);
+	int i = 0;
 
-	for (int i = 0; p_block[i] != 0; i++){
+	for (; p_block[i] != 0 && i < 256; i++){
 		char tmp = p_block[i];
 		if(tmp == 09)
 			tmp = (char) 254;
@@ -55,13 +49,34 @@ QByteArray kCrypt::blurBlock(char* p_block){
 			tmp = (char) 253;
 		else if(tmp == 13)
 			tmp = (char) 252;
-		tmp += m_blurKey[i];
+		tmp = ((tmp + m_blurKey[i] - 32)%224)+32;
+		rtn[m_kernel[i]] = tmp;
+	}
+	for (; i < 256; i++){
+		char tmp = 255;
+		tmp = ((tmp + m_blurKey[i] - 32)%224)+32;
 		rtn[m_kernel[i]] = tmp;
 	}
 
 	return rtn;
 }
 
-QByteArray kCrypt::clearBlock(char*){
+QByteArray kCrypt::clearBlock(char* p_block){
+	QByteArray rtn(256, (char) 255);
 
+	for (int i = 0; i < 256; i++){
+		char tmp = p_block[m_kernel[i]];
+		tmp = ((tmp + m_clearKey[i] - 32)%224)+32;
+		if(tmp == 255)
+			tmp = (char) 00;
+		else if(tmp == 254)
+			tmp = (char) 09;
+		else if(tmp == 253)
+			tmp = (char) 10;
+		else if(tmp == 252)
+			tmp = (char) 13;
+		rtn[i] = tmp;
+	}
+
+	return rtn;
 }
