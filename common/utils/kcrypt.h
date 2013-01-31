@@ -25,16 +25,19 @@ public:
 	QByteArray blur(const QByteArray&);
 	QByteArray clear(const QByteArray&);
 
+	static QByteArray genPassphrase();
+	static QByteArray genKernel();
+
 private:
-	QByteArray blurBlock(char*);
-	QByteArray clearBlock(char*);
+	QByteArray blurBlock(const unsigned char*);
+	QByteArray clearBlock(const unsigned char*);
 
 private:
 	int m_id;
 	QByteArray m_passphrase;
-	QList<char> m_kernel;
-	QList<char> m_blurKey;
-	QList<char> m_clearKey;
+	QList<unsigned char> m_kernel;
+	QList<unsigned char> m_blurKey;
+	QList<unsigned char> m_clearKey;
 };
 
 #endif // KCRYPT_H
