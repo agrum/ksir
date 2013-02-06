@@ -1,26 +1,37 @@
 #include "kcrypt.h"
 
 kCrypt::kCrypt(int p_id, const QByteArray& p_passphrase, const QString& p_kernel):
-	m_id(p_id),
-	m_passphrase(p_passphrase)
+	m_id(p_id)
 {
-	for (int i = 0; i < 256; i++)
+	for (int i = 0; i < 256; i++){
+		m_passphrase.push_back((unsigned char) (p_passphrase.mid(i*2, 2).toInt(NULL, 16)));
 		m_kernel.push_back((unsigned char) (p_kernel.mid(i*2, 2).toInt(NULL, 16)));
+	}
 }
 
 void kCrypt::setBlurKey()
 {
 	m_blurKey.clear();
 	for(int i = 0; i < 256; i++)
-		m_blurKey.push_back((unsigned char)  (qrand()%226));
+		m_blurKey.push_back((unsigned char)  (qrand()%224));
 }
 
 void kCrypt::setClearKey(const QByteArray& p_cryptedPassphrase)
 {
 	m_clearKey.clear();
 
-	for(int i = 0; i < 256; i++)
-		m_clearKey.push_back((unsigned char) (p_cryptedPassphrase[m_kernel[i]] - m_passphrase[i]));
+	for(int i = 0; i < 256; i++){
+		if(p_cryptedPassphrase[m_kernel[i]] < m_passphrase[i])
+			m_clearKey.push_back((unsigned char) (p_cryptedPassphrase[m_kernel[i]] - m_passphrase[i]));
+		else
+			m_clearKey.push_back((unsigned char) (p_cryptedPassphrase[m_kernel[i]] - m_passphrase[i]));
+	}
+}
+
+QByteArray kCrypt::initBlured()
+{
+	qDebug() << m_passphrase;
+	return blur(m_passphrase);
 }
 
 QByteArray kCrypt::blur(const QByteArray& p_msg)
@@ -53,7 +64,7 @@ QByteArray kCrypt::genPassphrase()
 	QString rtn;
 
 	for (int i = 0; i < 256; i++)
-		rtn += QString::number(qrand()%224 + 32, 16);
+		rtn += QString::number(qrand()%220 + 32, 16);
 
 	return rtn.toAscii();
 }
@@ -65,8 +76,12 @@ QByteArray kCrypt::genKernel()
 
 	for (int i = 0; i < 256; i++)
 		set.push_back(i);
-	for (int i = 0; i < 256; i++)
-		rtn += QString::number(set.takeAt(qrand()%(256-i)), 16);
+	for (int i = 0; i < 256; i++){
+		int pick = set.takeAt(qrand()%(256-i));
+		if(pick < 16)
+			rtn += QString::number(0, 16);
+		rtn += QString::number(pick, 16);
+	}
 
 	return rtn.toAscii();
 }
@@ -102,7 +117,7 @@ QByteArray kCrypt::clearBlock(const unsigned char* p_block)
 
 	for (int i = 0; i < 256; i++){
 		unsigned char tmp = p_block[m_kernel[i]];
-		tmp = ((tmp + m_clearKey[i] - 32)%224)+32;
+		tmp = ((tmp - m_clearKey[i] - 32)%224)+32;
 		if(tmp == 255)
 			tmp = (unsigned char) 0;
 		else if(tmp == (unsigned char) 254)

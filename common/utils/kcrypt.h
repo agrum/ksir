@@ -5,6 +5,7 @@
 #include <QList>
 #include <QPair>
 #include <QString>
+#include <QDebug>
 #include <QByteArray>
 
 /*
@@ -22,6 +23,7 @@ public:
 	void setBlurKey();
 	void setClearKey(const QByteArray&);
 
+	QByteArray initBlured();
 	QByteArray blur(const QByteArray&);
 	QByteArray clear(const QByteArray&);
 
