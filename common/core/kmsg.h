@@ -14,6 +14,7 @@
 class kMsg
 {
 public :
+	kMsg();
 	kMsg(const QString&, kMsgHeader::Type);
 	kMsg(const QString&, kMsgHeader::Type, const kCore&);
 	kMsg(const kMsg&);

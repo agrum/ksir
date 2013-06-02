@@ -4,6 +4,11 @@
  */
 #include "kmsg.h"
 
+kMsg::kMsg()
+{
+
+}
+
 kMsg::kMsg(const QString& p_name, kMsgHeader::Type p_type) :
 	m_info(p_name),
 	m_header(p_type)
@@ -51,7 +56,7 @@ bool kMsg::outdated()
 bool kMsg::exist(const QString& p_tag)
 {
 	for (QDomNode n = m_info.firstChild(); !n.isNull(); n = n.nextSibling())
-		if (n.localName() == p_tag)
+		if (n.nodeName() == p_tag)
 			return true;
 	return false;
 }
@@ -59,7 +64,7 @@ bool kMsg::exist(const QString& p_tag)
 bool kMsg::find(const QString& p_tag, QDomNode& p_node)
 {
 	for (QDomNode n = m_info.firstChild(); !n.isNull(); n = n.nextSibling()){
-		if (n.localName() == p_tag){
+		if (n.nodeName() == p_tag){
 			p_node = n;
 			return true;
 		}
@@ -69,13 +74,13 @@ bool kMsg::find(const QString& p_tag, QDomNode& p_node)
 
 bool kMsg::operator ==(const kMsg& p_msg)
 {
-	return	m_info.localName() == p_msg.m_info.localName()
+	return	m_info.doctype().name() == p_msg.m_info.doctype().name()
 			&& m_header.type() == p_msg.m_header.type();
 }
 
 bool kMsg::is(const QString& p_localName, const kMsgHeader::Type p_type)
 {
-	return	m_info.localName() == p_localName
+	return	m_info.doctype().name() == p_localName
 			&& m_header.type() == p_type;
 }
 

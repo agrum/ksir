@@ -1,7 +1,8 @@
 #include "kdistant.h"
 
-kDistant::kDistant(int p_socketDesc):
+kDistant::kDistant(int p_socketDesc, kQueueW& p_sysQueue):
 	pLogBehavior("kDistant"),
+	m_sysQueue(p_sysQueue),
 	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(false),
@@ -11,9 +12,10 @@ kDistant::kDistant(int p_socketDesc):
 	start();
 }
 
-kDistant::kDistant(const QDomNode& p_root):
+kDistant::kDistant(const QDomNode& p_root, kQueueW& p_sysQueue):
 	kCore(p_root),
 	pLogBehavior("kDistant"),
+	m_sysQueue(p_sysQueue),
 	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(true),
@@ -38,6 +40,11 @@ bool kDistant::alive()
 	if(m_socket->state() != QAbstractSocket::ConnectedState){
 		if(m_connected){
 			m_connected = false;
+
+			kMsg report(MSG_DISC_SOCK, kMsgHeader::REP);
+			report.add("who", m_addr);
+			m_sysQueue.push(report);
+
 			logI(kCommonLogExtension::INFO_LOST,
 				   QString("%1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
 		}
@@ -58,6 +65,11 @@ bool kDistant::alive()
 
 	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
 		m_connected = true;
+
+		kMsg report(MSG_CONN_SOCK, kMsgHeader::REP);
+		report.add("who", m_addr);
+		m_sysQueue.push(report);
+
 		logI(kCommonLogExtension::INFO_JOINED,
 				   QString("%1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
 	}

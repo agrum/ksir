@@ -1,8 +1,6 @@
 #ifndef KXMLBEHAVIOR_H
 #define KXMLBEHAVIOR_H
 
-#endif // KXMLBEHAVIOR_H
-
 #include <QtXml>
 
 #define XML_NONE "none"
@@ -16,6 +14,9 @@
 #define XML_SERVER "server"
 #define XML_CLIENT "client"
 #define XML_DATABASE "database"
+#define XML_CRYPT "crypt"
+#define XML_CRYPT_PASSPH "passphrase"
+#define XML_CRYPT_KERNEL "kernel"
 
 class kXmlBehavior
 {
@@ -39,3 +40,5 @@ protected :
 private:
 	void readFile(const QString&);
 };
+
+#endif // KXMLBEHAVIOR_H

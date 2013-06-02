@@ -19,9 +19,10 @@ class kMsgHeader : public kXmlBehavior
 public :
 	enum Type{
 		NONE,
-		INFO,
-		REQ,
-		ANS
+		INFO, //Casual information transition between systems
+		REP, //Meant to stay in the same system
+		REQ, //Meant to ask for something
+		ANS //Meant to answer a request
 	};
 
 	kMsgHeader();

@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core xml network sql
-QT       -= gui
+QT       += gui
 
 TARGET = ksir
 CONFIG   += console
@@ -21,10 +21,17 @@ LIBS += -L/home/agrum/Workspace/ksir/build_common/lib \
 	-lpomelog
 
 SOURCES += main.cpp \
-    kclient.cpp
+    kclient.cpp \
+    kclientwidget.cpp \
+    kclientuimngr.cpp
 
 HEADERS += \
-    kclient.h
+		kclient.h \
+    kclientwidget.h \
+    kclientuimngr.h
 
 OTHER_FILES += \
     conf.d/global1.xml
+
+FORMS += \
+    kclientwidget.ui
