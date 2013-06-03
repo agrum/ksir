@@ -22,16 +22,17 @@ LIBS += -L/home/agrum/Workspace/ksir/build_common/lib \
 
 SOURCES += main.cpp \
     kclient.cpp \
-    kclientwidget.cpp \
-    kclientuimngr.cpp
+    kclientuimngr.cpp \
+    kuinavigationtree.cpp
 
 HEADERS += \
 		kclient.h \
-    kclientwidget.h \
-    kclientuimngr.h
+    kclientuimngr.h \
+    kuinavigationtree.h
 
 OTHER_FILES += \
     conf.d/global1.xml
 
 FORMS += \
-    kclientwidget.ui
+    kuinavigationtree.ui \
+    kclientuimngr.ui

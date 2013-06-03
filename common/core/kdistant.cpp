@@ -37,16 +37,21 @@ kDistant::~kDistant()
 
 bool kDistant::alive()
 {
+	QString sysIdentifier = QString("%1 %2 %3:%4")
+			.arg(m_id)
+			.arg(m_type)
+			.arg(m_addr)
+			.arg(m_port);
+
 	if(m_socket->state() != QAbstractSocket::ConnectedState){
 		if(m_connected){
 			m_connected = false;
 
 			kMsg report(MSG_DISC_SOCK, kMsgHeader::REP);
-			report.add("who", m_addr);
+			report.add("who", m_id);
 			m_sysQueue.push(report);
 
-			logI(kCommonLogExtension::INFO_LOST,
-				   QString("%1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
+			logI(kCommonLogExtension::INFO_LOST, sysIdentifier);
 		}
 		if(m_responsible){
 			m_socket->abort();
@@ -67,11 +72,10 @@ bool kDistant::alive()
 		m_connected = true;
 
 		kMsg report(MSG_CONN_SOCK, kMsgHeader::REP);
-		report.add("who", m_addr);
+		report.add("who", m_id);
 		m_sysQueue.push(report);
 
-		logI(kCommonLogExtension::INFO_JOINED,
-				   QString("%1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
+		logI(kCommonLogExtension::INFO_JOINED, sysIdentifier);
 	}
 
 	return m_socket->state() == QAbstractSocket::ConnectedState;
