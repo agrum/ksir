@@ -13,8 +13,6 @@ kClient::kClient(const QDomNode& p_root):
 		m_serverList.at(i)->start();
 	//m_currentServer = m_serverList.first();
 
-	kMsgHeader::setSender(*(kCore*) this);
-
 	start();
 }
 
@@ -35,7 +33,7 @@ void kClient::run()
 			while(!msgList.empty()){
 				kMsg tmp = msgList.takeFirst();
 				if(tmp.is("gotYourName", kMsgHeader::INFO)){ //Name client
-					m_id = tmp.header().receiver().id();
+					m_id = tmp.header().receiver();
 					logI(pLog::INFO_NONE, "name set : " + m_id);
 				}
 			}

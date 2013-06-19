@@ -7,8 +7,6 @@ kServer::kServer(const QDomNode& p_root):
 	for(int i = 0; i < m_distantList.size(); i++)
 		m_distantList[i]->start();
 
-	kMsgHeader::setSender(*(kCore*) this);
-
 	start();
 }
 
@@ -58,6 +56,7 @@ void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 		if(*tmp == *this){
 			qDebug() << "Server " << m_id;
 			qDebug() << "Try listening on port " << tmp->port() << "...";
+
 			if(m_tcpServer.listen(QHostAddress::Any, tmp->port()))
 				qDebug() << "Succes";
 			else {

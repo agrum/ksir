@@ -8,6 +8,7 @@
 #include "pomelog.h"
 
 #include "../utils/kcommonlogextension.h"
+#include "../utils/kcrypt.h"
 #include "kcore.h"
 #include "kmsg.h"
 #include "kqueue.h"
@@ -34,9 +35,11 @@ public:
 
 private:
 	QString m_addr;
+	QString m_sender;
 	int m_port;
 	QTime m_time;
 	QByteArray m_msgStack;
+	int m_msgStackSize;
 
 	kQueueW& m_sysQueue;
 	QList <kMsg> m_sendList;
@@ -48,6 +51,9 @@ private:
 	bool m_responsible;
 	int m_socketDesc;
 	QTcpSocket* m_socket;
+
+	kCrypt* m_crypt;
+	bool m_canCrypt;
 };
 
 #define MSG_DISC_SOCK "socket disconnected"

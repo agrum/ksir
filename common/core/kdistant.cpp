@@ -7,7 +7,9 @@ kDistant::kDistant(int p_socketDesc, kQueueW& p_sysQueue):
 	m_connected(false),
 	m_responsible(false),
 	m_socketDesc(p_socketDesc),
-	m_socket(NULL)
+	m_socket(NULL),
+	m_crypt(NULL),
+	m_canCrypt(false)
 {
 	start();
 }
@@ -19,7 +21,9 @@ kDistant::kDistant(const QDomNode& p_root, kQueueW& p_sysQueue):
 	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(true),
-	m_socket(NULL)
+	m_socket(NULL),
+	m_crypt(NULL),
+	m_canCrypt(false)
 {
 	from(p_root);
 
@@ -64,8 +68,13 @@ bool kDistant::alive()
 				m_mutex.unlock();
 			}
 		}
-		else //Will never be used anyway
+		else{ //Will never be used anyway
+			m_mutex.lock();
+			delete m_crypt;
+			m_crypt = NULL;
 			m_mustDestroy = true;
+			m_mutex.unlock();
+		}
 	}
 
 	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
@@ -99,10 +108,10 @@ QList<kMsg> kDistant::getMsg()
 	m_receiveList.clear();
 	m_mutex.unlock();
 
-	if(!rtn.empty() && isNull()){
-		*(kCore*) this = rtn.first().header().sender();
+	if(!rtn.empty() && (isNull() || m_temporaryName)){
+		m_id = rtn.first().header().sender();
 		if(m_id == "" && m_type == "client"){ //Give an unique name to the client
-			m_id = rtn.first().header().receiver().id() + "_" + QTime::currentTime().toString();
+			m_id = rtn.first().header().receiver() + "_" + QTime::currentTime().toString();
 
 			kMsg aliveMsg("GotYourName", kMsgHeader::INFO, *this);
 
@@ -118,6 +127,10 @@ QList<kMsg> kDistant::getMsg()
 }
 
 void kDistant::run(){
+	QByteArray tmpBA;
+	bool helpExpected = true;
+	int msgLength;
+
 	m_socket = new QTcpSocket();
 	if(!m_responsible){
 		m_socket->setSocketDescriptor(m_socketDesc);
@@ -131,7 +144,12 @@ void kDistant::run(){
 				kMsg tmp = m_sendList.takeFirst();
 				if(!tmp.outdated()){
 					//qDebug() << "write\n" << tmp.toMsg();
-					m_socket->write(tmp.toMsg());
+					tmp.header().setSender(m_sender);
+					tmpBA = tmp.toMsg();
+					if(m_canCrypt)
+						m_socket->write(QByteArray::number(256 * (2 + tmpBA.size()/256)) + "\r\n" + m_crypt->blur(tmpBA) + "\r\n");
+					else if(tmp.name() == "Hello")
+						m_socket->write(QByteArray::number(tmpBA.size()) + "\r\n" + tmpBA + "\r\n");
 					m_socket->waitForBytesWritten(100);
 				}
 				else
@@ -141,19 +159,24 @@ void kDistant::run(){
 			//Get pending messages
 			m_socket->waitForReadyRead(100);
 			while(m_socket->canReadLine()){
-				QByteArray line = m_socket->readLine();
-				m_msgStack += line;
+				if(helpExpected){
+					QByteArray line = m_socket->readLine();
+					msgLength = line.left(line.size() - 2).toInt(NULL, 10);
+					helpExpected = false;
+				}
+				if(!helpExpected && m_socket->bytesAvailable() >= msgLength) {
+					QByteArray msg = m_socket->read(msgLength);
+					if(m_canCrypt)
+						msg = m_crypt->clear(msg, msgLength);
+					helpExpected = true;
 
-				if(line.left(9) == "</Header>"){
-					//qDebug() << "read\n" << m_msgStack;
-					kMsg tmp(m_msgStack);
-					m_receiveList.push_back(kMsg (m_msgStack));
-					m_msgStack.clear();
+					//qDebug() << "read\n" << m_msg;
+					m_receiveList.push_back(kMsg (msg));
 				}
 			}
 			m_mutex.unlock();
 		}
-		msleep(250);
+		msleep(20);
 	}
 }
 
@@ -164,4 +187,8 @@ void kDistant::readXml(const QString& p_tag, const QDomElement& p_node)
 		m_addr = p_node.text();
 	if( p_tag == XML_PORT )
 		m_port = p_node.text().toInt();
+	if( p_tag == XML_KNOWNAS )
+		m_sender = p_node.text();
+	if( p_tag == XML_CRYPT )
+		m_crypt = new kCrypt(p_node);
 }
