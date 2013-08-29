@@ -108,7 +108,7 @@ QList<kMsg> kDistant::getMsg()
 	m_receiveList.clear();
 	m_mutex.unlock();
 
-	if(!rtn.empty() && (isNull() || m_temporaryName)){
+    if(!rtn.empty() && (isNull())){
 		m_id = rtn.first().header().sender();
 		if(m_id == "" && m_type == "client"){ //Give an unique name to the client
 			m_id = rtn.first().header().receiver() + "_" + QTime::currentTime().toString();

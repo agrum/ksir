@@ -17,7 +17,7 @@ public:
 	kCrypt(const QByteArray&, const QByteArray&);
 	kCrypt(const QDomNode&);
 	kCrypt(const kCrypt&);
-	~kCrypt();
+    virtual ~kCrypt();
 	kCrypt& operator=(const kCrypt&);
 
 	QByteArray blur(const QByteArray&);

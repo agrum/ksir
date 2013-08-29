@@ -117,9 +117,9 @@ QByteArray kCrypt::clear(const QByteArray& p_msg, int size)
 void kCrypt::readXml(const QString& p_tag, const QDomElement& p_node)
 {
 	if( p_tag == XML_CRYPT_PASSPH )
-		m_passphraseStr = p_node.text().toAscii();
+        m_passphraseStr = p_node.text().toLatin1();
 	else if( p_tag == XML_CRYPT_KERNEL )
-		m_kernelStr = p_node.text().toAscii();
+        m_kernelStr = p_node.text().toLatin1();
 }
 
 void kCrypt::writeXml(QDomNode& p_tag)
@@ -174,7 +174,7 @@ QByteArray kCrypt::genPassphrase()
 		rtn += QString::number(c, 16);
 	}
 
-	return rtn.toAscii();
+    return rtn.toLatin1();
 }
 
 QByteArray kCrypt::genKernel()
@@ -191,7 +191,7 @@ QByteArray kCrypt::genKernel()
 		rtn += QString::number(pick, 16);
 	}
 
-	return rtn.toAscii();
+    return rtn.toLatin1();
 }
 
 //---INNERPROCESS
