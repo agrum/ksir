@@ -5,7 +5,7 @@ kCrypt::kCrypt(int p_id, const QByteArray& p_passphrase, const QString& p_kernel
 	m_passphrase(p_passphrase)
 {
 	for (int i = 0; i < 256; i++)
-		m_kernel.push_back(p_kernel[i].toAscii());
+        m_kernel.push_back(p_kernel[i].toLatin1());
 }
 
 void kCrypt::setBlurKey()
