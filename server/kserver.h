@@ -24,6 +24,7 @@ public:
 	virtual void readXml(const QString&, const QDomElement&);
 
 private:
+	kQueueR m_queue;
 	kDatabase m_database;
 	kTcpServer m_tcpServer;
 	QList <kDistant*> m_distantList;

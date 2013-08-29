@@ -7,19 +7,16 @@
 
 #include "kmsgheader.h"
 
-kCore kMsgHeader::m_core;
 unsigned int kMsgHeader::m_idCount = 0;
 QMutex kMsgHeader::m_mutex;
 
-kMsgHeader::kMsgHeader():
-	m_sender(m_core)
+kMsgHeader::kMsgHeader()
 {
 
 }
 
 kMsgHeader::kMsgHeader(Type p_type) :
-	m_type(p_type),
-	m_sender(m_core)
+	m_type(p_type)
 {
 
 }
@@ -31,8 +28,7 @@ kMsgHeader::kMsgHeader(const QDomNode& p_root)
 
 kMsgHeader::kMsgHeader(Type p_type, const kCore& p_receiver) :
 	m_type(p_type),
-	m_sender(m_core),
-	m_receiver(p_receiver)
+	m_receiver(p_receiver.id())
 {
 	m_mutex.lock();
 	m_id = m_idCount++;
@@ -63,17 +59,17 @@ void kMsgHeader::readXml(const QString& p_tag, const QDomElement& p_node){
 		m_id = p_node.text().toInt();
 	else if(p_tag == XML_TYPE)
 		m_type = (kMsgHeader::Type) p_node.text().toInt();
-	else if(p_tag == XML_ALICE)
-		m_sender.from(p_node);
-	else if(p_tag == XML_BOB)
-		m_receiver.from(p_node);
+	else if(p_tag == XML_FROM)
+		m_sender = p_node.text();
+	else if(p_tag == XML_TO)
+		m_receiver = p_node.text();
 }
 
 void kMsgHeader::writeXml(QDomNode& p_tag){
+	addToElement(p_tag, XML_FROM, m_sender);
+	addToElement(p_tag, XML_TO, m_receiver);
 	addToElement(p_tag, XML_ID, m_id);
 	addToElement(p_tag, XML_TYPE, m_type);
-	m_sender.to(p_tag, XML_ALICE);
-	m_receiver.to(p_tag, XML_BOB);
 }
 
 QString kMsgHeader::print(QString p_blank){
@@ -82,10 +78,8 @@ QString kMsgHeader::print(QString p_blank){
 	p_blank += " ";
 	Result += p_blank + "type : " + m_type + "\n";
 	Result += p_blank + "msgId : " + QString("%1").arg(m_id) + "\n";
-	Result += p_blank + "sender : " + m_sender.type() + "\n";
-	Result += p_blank + "senderId : " + m_sender.id() + "\n";
-	Result += p_blank + "receiver : " + m_receiver.type() + "\n";
-	Result += p_blank + "receiverId : " + m_receiver.id() + "\n";
+	Result += p_blank + "sender : " + m_sender + "\n";
+	Result += p_blank + "receiver : " + m_receiver + "\n";
 
 	return Result;
 }

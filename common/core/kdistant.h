@@ -8,15 +8,16 @@
 #include "pomelog.h"
 
 #include "../utils/kcommonlogextension.h"
+#include "../utils/kcrypt.h"
 #include "kcore.h"
 #include "kmsg.h"
-#include "../utils/kcommonlogextension.h"
+#include "kqueue.h"
 
 class kDistant : public kCore, public QThread, public pLogBehavior
 {
 public:
-	kDistant(int);
-	kDistant(const QDomNode&);
+	kDistant(int, kQueueW&);
+	kDistant(const QDomNode&, kQueueW&);
 	~kDistant();
 
 	int port() const { return m_port; }
@@ -33,15 +34,14 @@ public:
 	virtual void writeXml(QDomNode&) {}
 
 private:
-	kDistant(const kDistant&): kCore(), QThread(), pLogBehavior() {}
-	kDistant& operator=(const kDistant&) { return *this; }
-
-private:
 	QString m_addr;
+	QString m_sender;
 	int m_port;
 	QTime m_time;
 	QByteArray m_msgStack;
+	int m_msgStackSize;
 
+	kQueueW& m_sysQueue;
 	QList <kMsg> m_sendList;
 	QList <kMsg> m_receiveList;
 	QMutex m_mutex;
@@ -51,6 +51,12 @@ private:
 	bool m_responsible;
 	int m_socketDesc;
 	QTcpSocket* m_socket;
+
+	kCrypt* m_crypt;
+	bool m_canCrypt;
 };
+
+#define MSG_DISC_SOCK "socket disconnected"
+#define MSG_CONN_SOCK "socket connected"
 
 #endif // KDISTANT_H

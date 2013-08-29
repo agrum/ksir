@@ -14,6 +14,7 @@
 class kMsg
 {
 public :
+	kMsg();
 	kMsg(const QString&, kMsgHeader::Type);
 	kMsg(const QString&, kMsgHeader::Type, const kCore&);
 	kMsg(const kMsg&);
@@ -22,7 +23,7 @@ public :
 
 	bool outdated();
 
-	const QString name() const { return m_info.localName(); }
+    const QString name() const { return m_info.doctype().name(); }
 	kMsgHeader& header() { return m_header; }
 	QDomNode& dom() { return m_info; }
 	QDomNode node(const QString& p_node) { return m_info.firstChildElement(p_node); }

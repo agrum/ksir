@@ -10,6 +10,7 @@
 
 #include <QtCore>
 #include <QtXml>
+#include <QString>
 #include <QMutex>
 
 #include "kcore.h"
@@ -19,9 +20,10 @@ class kMsgHeader : public kXmlBehavior
 public :
 	enum Type{
 		NONE,
-		INFO,
-		REQ,
-		ANS
+		INFO, //Casual information transition between systems
+		REP, //Meant to stay in the same system
+		REQ, //Meant to ask for something
+		ANS //Meant to answer a request
 	};
 
 	kMsgHeader();
@@ -33,10 +35,10 @@ public :
 
 	int id() const { return m_id; }
 	Type type() const { return m_type; }
-	const kCore sender() const { return m_sender; }
-	const kCore receiver() const { return m_receiver; }
+	const QString sender() const { return m_sender; }
+	const QString receiver() const { return m_receiver; }
 
-	static void setSender(const kCore& p_sender) { m_core = p_sender; }
+	inline void setSender(const QString& p_sender) { m_sender = p_sender; }
 
 	//XML
 	void readXml(const QString&, const QDomElement&);
@@ -51,8 +53,8 @@ private :
 
 	unsigned int m_id;
 	Type m_type;
-	kCore m_sender;
-	kCore m_receiver;
+	QString m_sender;
+	QString m_receiver;
 };
 
 #endif /* KMSGHEADER_H_ */

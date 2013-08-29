@@ -7,8 +7,6 @@ kServer::kServer(const QDomNode& p_root):
 	for(int i = 0; i < m_distantList.size(); i++)
 		m_distantList[i]->start();
 
-	kMsgHeader::setSender(*(kCore*) this);
-
 	start();
 }
 
@@ -24,7 +22,7 @@ void kServer::run()
 
 	while(!err){
 		if(m_tcpServer.hasSocketDesc()){
-			kDistant* tmp = new kDistant(m_tcpServer.socketDesc());
+			kDistant* tmp = new kDistant(m_tcpServer.socketDesc(), *(kQueueW*) &m_queue);
 			m_distantList.push_front(tmp);
 		}
 
@@ -49,15 +47,16 @@ void kServer::run()
 //XML
 void kServer::readXml(const QString& p_tag, const QDomElement& p_node)
 {
-	if(p_tag == XML_DATABASE){
+	/*if(p_tag == XML_DATABASE){
 		m_database.from(p_node);
 		m_database.login();
 	}
-	else if(p_tag == XML_SERVER){
-		kDistant* tmp = new kDistant(p_node);
+	else */if(p_tag == XML_SERVER){
+		kDistant* tmp = new kDistant(p_node, *(kQueueW*) &m_queue);
 		if(*tmp == *this){
 			qDebug() << "Server " << m_id;
 			qDebug() << "Try listening on port " << tmp->port() << "...";
+
 			if(m_tcpServer.listen(QHostAddress::Any, tmp->port()))
 				qDebug() << "Succes";
 			else {

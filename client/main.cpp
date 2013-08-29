@@ -1,10 +1,11 @@
-#include <QtCore/QCoreApplication>
+#include <QApplication>
 #include "pomelog.h"
 #include "kclient.h"
+#include "ksir_common.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+	QApplication a(argc, argv);
 
 	pLog::init("ksir.log", pLog::ALL);
 	pLog::sign((void*) 1, "main()");
@@ -22,5 +23,5 @@ int main(int argc, char *argv[])
 	doc.setContent(&file);
 	kClient client(doc.firstChild());
 
-    return a.exec();
+	return a.exec();
 }

@@ -13,25 +13,27 @@ TEMPLATE = lib
 DESTDIR = lib
 
 INCLUDEPATH += /media/agrum/data/workspace/pomelog/src/include
-LIBS += -L/media/agrum/data/workspace/pomelog/build-pomelog-Desktop-Release/lib
-	-lpomelog \
+LIBS += -L/media/agrum/data/workspace/pomelog/build-pomelog-Desktop-Release/lib \
+        -lpomelog
 
 SOURCES += utils/kxmlbehavior.cpp \
 	core/kcore.cpp \
 	core/kmsg.cpp \
 	core/kmsgheader.cpp \
-    core/kdistant.cpp \
-    utils/kcommonlogextension.cpp \
-    utils/kcrypt.cpp
+	core/kdistant.cpp \
+	core/kqueue.cpp \
+	utils/kcommonlogextension.cpp \
+	utils/kcrypt.cpp
 
 HEADERS += utils/kxmlbehavior.h \
 	core/kcore.h \
 	core/kmsg.h \
 	core/kmsgheader.h \
-    include/ksir_common.h \
+	core/kqueue.h \
 	core/kdistant.h \
+	include/ksir_common.h \
 	utils/kcommonlogextension.h \
-    utils/kcrypt.h
+	utils/kcrypt.h
 
 OTHER_FILES += \
     conf.d/serverlist.xml
