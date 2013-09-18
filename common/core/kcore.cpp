@@ -1,5 +1,7 @@
 #include "kcore.h"
 
+//Lifetime
+
 kCore::kCore()
 {
 
@@ -26,6 +28,8 @@ kCore& kCore::operator=(const kCore& p_core)
 	return *this;
 }
 
+//Integrity helper
+
 bool kCore::operator==(const kCore& p_core) const
 {
 	return (m_id == p_core.m_id && m_type == p_core.m_type);
@@ -35,6 +39,8 @@ bool kCore::isNull() const
 {
 	return (m_id == "" && m_type == "");
 }
+
+//XML
 
 void kCore::readXml(const QString& p_tag, const QDomElement& p_node)
 {

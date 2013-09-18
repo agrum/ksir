@@ -1,187 +1,121 @@
 #include "kcrypt.h"
 
+#include <assert.h>
+
+#include <QDebug>
+
+/////KCRYPT
+
 //_-_-_PUBLIC
 
 //---LIFETIME
 
-kCrypt::kCrypt() :
-m_clearSum(-1)
+/* $Desc Constructor. Generates its own passphrase and kernel.
+ * $Parm /
+ * $Rtrn /
+ */
+kCrypt::kCrypt()
 {
-	m_passphraseStr = genPassphrase();
 	m_kernelStr = genKernel();
 
-	for (int i = 0; i < 256; i++){
-		m_passphrase.push_back((unsigned char) (m_passphraseStr.mid(i*2, 2).toInt(NULL, 16)));
-		m_kernel.push_back((unsigned char) (m_kernelStr.mid(i*2, 2).toInt(NULL, 16)));
-	}
-
-    initBlur();
+	initKernel();
 }
 
-kCrypt::kCrypt(const QDomNode& p_node) :
-m_clearSum(-1)
+/* $Desc Constructor. Generates its passphrase and kernel out of an XML node.
+ * $Parm p_node QDomNode as the one filled by writeXML().
+ * $Rtrn /
+ */
+kCrypt::kCrypt(const QDomNode& p_node)
 {
 	from(p_node);
 
-	for (int i = 0; i < 256; i++){
-		m_passphrase.push_back((unsigned char) (m_passphraseStr.mid(i*2, 2).toInt(NULL, 16)));
-		m_kernel.push_back((unsigned char) (m_kernelStr.mid(i*2, 2).toInt(NULL, 16)));
-	}
-	initBlur();
+	initKernel();
 }
 
-kCrypt::kCrypt(const QByteArray& p_passphrase, const QByteArray& p_kernel):
-
-	m_clearSum(-1),
-	m_passphraseStr(p_passphrase),
-	m_kernelStr(p_kernel)
+/* $Desc Constructor. Generates its passphrase and kernel out of the provided kernel.
+ * $Parm p_kernel Kernel in hex.
+ * $Rtrn /
+ */
+kCrypt::kCrypt(const QByteArray& p_kernel):
+m_kernelStr(p_kernel)
 {
-	for (int i = 0; i < 256; i++){
-		m_passphrase.push_back((unsigned char) (m_passphraseStr.mid(i*2, 2).toInt(NULL, 16)));
-		m_kernel.push_back((unsigned char) (m_kernelStr.mid(i*2, 2).toInt(NULL, 16)));
-	}
-	initBlur();
+	initKernel();
 }
 
+/* $Desc Constructor. Copy an existing kCrypt.
+ * $Parm p_crypt reference.
+ * $Rtrn /
+ */
 kCrypt::kCrypt(const kCrypt& p_crypt):
-	m_passphrase(p_crypt.m_passphrase),
-	m_kernel(p_crypt.m_kernel),
-	m_blurKey(p_crypt.m_blurKey),
-	m_clearSum(p_crypt.m_clearSum),
-	m_passphraseStr(p_crypt.m_passphraseStr),
-	m_kernelStr(p_crypt.m_kernelStr)
+m_kernelStr(p_crypt.m_kernelStr)
 {
-
+	memcpy(m_kernel, p_crypt.m_kernel, 256);
 }
 
+/* $Desc Desctructor.
+ * $Parm /
+ * $Rtrn /
+ */
 kCrypt::~kCrypt()
 {
 
 }
 
-kCrypt& kCrypt::operator=(const kCrypt& p_crypt)
+/* $Desc Copy operator.
+ * $Parm p_crypt reference.
+ * $Rtrn /
+ */
+kCrypt&
+kCrypt::operator=(const kCrypt& p_crypt)
 {
-	m_passphrase = p_crypt.m_passphrase;
-	m_kernel = p_crypt.m_kernel;
-	m_blurKey = p_crypt.m_blurKey;
-	m_clearSum = p_crypt.m_clearSum;
-	m_passphraseStr = p_crypt.m_passphraseStr;
 	m_kernelStr = p_crypt.m_kernelStr;
+
+	memcpy(m_kernel, p_crypt.m_kernel, 256);
 
 	return *this;
 }
 
-//---OPERATION
-
-QByteArray kCrypt::blur(const QByteArray& p_msg)
-{
-	QByteArray rtn;
-	int blocks = p_msg.length()%256 + 1;
-	const unsigned char* data = (const unsigned char*) p_msg.data();
-	int setSorted[256];
-	int setUnsorted[256];
-
-	for (int i = 0; i < 256; i++)
-		setSorted[i] = i;
-	for (int i = 0; i < 256; i++)
-		setUnsorted[i] = setSorted[qrand()%(256-i)];
-
-	if(p_msg.size() > 0)
-		for(int i = 0; i < blocks; i++)
-			rtn.append(blurBlock(data + (256*i), setUnsorted));
-
-	return blurBlock((const unsigned char*) m_passphrase.data(), setUnsorted) + rtn + '\0';
-}
-
-QByteArray kCrypt::clear(const QByteArray& p_msg, int size)
-{
-	QByteArray rtn;
-	QByteArray cryptedPassphrase = p_msg.left(256);
-	QByteArray cryptedMsg = p_msg.mid(256);
-	int blocks = (size-256)/256 + 1;
-	const unsigned char* data = (const unsigned char*) cryptedMsg.data();
-	unsigned char clearKey[256];
-
-	if(!extractClearKey((const unsigned char*) cryptedPassphrase.data(), clearKey))
-		return rtn;
-
-	for(int i = 0; i < blocks; i++){
-		rtn.append(clearBlock(data + (256*i), clearKey));
-	}
-
-	return rtn;
-}
+//_-_-_PRIVATE
 
 //---XMLBEHAVIOUR
 
-void kCrypt::readXml(const QString& p_tag, const QDomElement& p_node)
+/* $Desc XML interface inherited. Set from an XML.
+ * $Parm p_tag Tag of the current node.
+ * $Parm p_tag Current node.
+ * $Rtrn /.
+ */
+void
+kCrypt::readXml(const QString& p_tag, const QDomElement& p_node)
 {
-	if( p_tag == XML_CRYPT_PASSPH )
-        m_passphraseStr = p_node.text().toLatin1();
-	else if( p_tag == XML_CRYPT_KERNEL )
+	if( p_tag == XML_CRYPT_KERNEL )
         m_kernelStr = p_node.text().toLatin1();
 }
 
-void kCrypt::writeXml(QDomNode& p_tag)
+/* $Desc XML interface inherited. Fill an XML.
+ * $Parm p_tag Tag of the current node.
+ * $Parm p_tag Current node.
+ * $Rtrn /.
+ */
+void
+kCrypt::writeXml(QDomNode& p_tag)
 {
-	addToElement(p_tag, XML_CRYPT_PASSPH, QString(m_passphraseStr));
 	addToElement(p_tag, XML_CRYPT_KERNEL, QString(m_kernelStr));
 }
 
-//_-_-_PRIVATE
+//---FUNDAMENTAL
 
-//---KEYGEN
-
-void kCrypt::initBlur()
-{
-	m_blurKey.clear();
-	for(int i = 0; i < 256; i++)
-		m_blurKey.push_back((unsigned char)  (qrand()%256));
-}
-
-bool kCrypt::extractClearKey(const unsigned char* p_cryptedPassphrase, unsigned char* p_clearKey)
-{
-	union {
-		int sum;
-		unsigned char c[4];
-	};
-	int checkSum = 0;
-
-	for(int i = 0; i < 256; i++){
-		p_clearKey[i] = (unsigned char) (p_cryptedPassphrase[m_kernel[i]] - m_passphrase[i]);
-
-		sum = 0;
-		c[3] = p_clearKey[i];
-		checkSum += sum * sum;
-	}
-
-	if(m_clearSum == -1){
-		m_clearSum = checkSum;
-		return true;
-	}
-	else
-		return m_clearSum == checkSum;
-}
-
-QByteArray kCrypt::genPassphrase()
-{
-	QString rtn;
-
-	for (int i = 0; i < 256; i++){
-		int c = qrand()%256;
-		if(c < 16)
-			rtn += QString::number(0, 16);
-		rtn += QString::number(c, 16);
-	}
-
-    return rtn.toLatin1();
-}
-
-QByteArray kCrypt::genKernel()
+/* $Desc Generate randomly a kernel for a brand new kCrypt.
+ * $Parm /
+ * $Rtrn 512 char long string in hexadecimal.
+ */
+QByteArray
+kCrypt::genKernel()
 {
 	QString rtn;
 	QList<int> set;
 
+	//The kernel is a set of entries from 0 to 255
+	//The order is shuffled, but there is no doubles
 	for (int i = 0; i < 256; i++)
 		set.push_back(i);
 	for (int i = 0; i < 256; i++){
@@ -194,35 +128,274 @@ QByteArray kCrypt::genKernel()
     return rtn.toLatin1();
 }
 
-//---INNERPROCESS
+/////KBLURER
 
-QByteArray kCrypt::blurBlock(const unsigned char* p_block, int* p_set)
+//_-_-_PUBLIC
+
+//---LIFETIME
+
+/* $Desc Constructor. Generates its own passphrase and kernel.
+ * $Parm /
+ * $Rtrn /
+ */
+kBlurer::kBlurer(const kCrypt& p_crypt) :
+m_crypt(p_crypt)
 {
-	QByteArray rtn(256, (unsigned char) 255);
-	int i = 0;
+	//The mixer modify frequently the bluring key.
+	//It s asimple 256 char entry which sum is a multiple of 256.
+	unsigned char moduler = 0;
+	for (int i = 0; i < 255; i++)
+		moduler += m_mixer[i] = (unsigned char) (qrand()%256);
+	m_mixer[255] = 0 - moduler;
 
-	for (; p_block[i] != 0 && i < 256; i++){
-		int tmp = p_block[i];
-		tmp = (tmp + m_blurKey[p_set[i]])%256;
-		rtn[m_kernel[i]] = tmp;
-	}
-	for (; i < 256; i++){
-		int tmp = 0;
-		tmp = (tmp + m_blurKey[p_set[i]])%256;
-		rtn[m_kernel[i]] = tmp;
-	}
+	//The bluring key is combined with the kernel to encrypt a message.
+	//While both parties knows the kernel, they receiver doesn t know
+	// the bluring key until the header is decrypted.
+	for(int i = 0; i < 256; i++)
+		m_blurKey[i] = (unsigned char) (qrand()%256);
+}
+
+/* $Desc Constructor. Generates its passphrase and kernel out of an XML node.
+ * $Parm p_node QDomNode as the one filled by writeXML().
+ * $Rtrn /
+ */
+kBlurer::kBlurer(const kBlurer& p_blurer) :
+m_crypt(p_blurer.m_crypt)
+{
+	memcpy(m_mixer,	p_blurer.m_mixer, 256);
+	memcpy(m_blurKey, p_blurer.m_blurKey, 256);
+}
+
+/* $Desc Desctructor.
+ * $Parm /
+ * $Rtrn /
+ */
+kBlurer::~kBlurer()
+{
+
+}
+
+/* $Desc Copy operator.
+ * $Parm p_crypt reference.
+ * $Rtrn /
+ */
+kBlurer&
+kBlurer::operator=(const kBlurer& p_blurer)
+{
+	m_crypt = p_blurer.m_crypt;
+
+	memcpy(m_mixer,	p_blurer.m_mixer, 256);
+	memcpy(m_blurKey, p_blurer.m_blurKey, 256);
+
+	return *this;
+}
+
+//---OPERATION
+
+/* $Desc Crypt a string. The output size is a multiple of 256.
+ *	Only kCrypts with the same kernel can decypher the encrypted data.
+ * $Parm p_msg string to encrypt.
+ * $Rtrn Encrypted input.
+ */
+QByteArray
+kBlurer::blur(const QByteArray& p_msg)
+{
+	QByteArray rtn;
+	int blocks = p_msg.length()/256 + p_msg.length()/1; //Message splitted every 256 chars
+	const unsigned char* data = (const unsigned char*) p_msg.data();
+
+	//Mix the bluring key
+	//To avoid using the same mixer each time,
+	//	the starting point used in the mixer changes
+	//	randomly at each call
+	//The bluring key is permanently changed
+	//But its checksum stays the same
+	unsigned int push = qrand()%256;
+	for (int i = 0; i < 256; i++)
+		m_blurKey[i] += m_mixer[(i+push)%256];
+
+	//Encrypt the message 256bytes block by 256bytes block
+	for(int i = 0; i < blocks; i++)
+		rtn.append(blurBlock(data + (256*i)));
+
+	//Set the header of the message with is the encrypted kernel
+	//	with the newly mixed bluring key
+	rtn = blurBlock((const unsigned char*) m_crypt.kernel()) + rtn + '\0';
 
 	return rtn;
 }
 
-QByteArray kCrypt::clearBlock(const unsigned char* p_block, unsigned char* p_key)
+//---INNERPROCESS
+
+/* $Desc Encrypt a 256bytes block of data.
+ * $Parm p_block data to crypt
+ * $Rtrn The encrypted block in a 256bytes QByteArray.
+ */
+QByteArray
+kBlurer::blurBlock(const unsigned char* p_block)
+{
+	QByteArray rtn(256, (unsigned char) 255);
+	int i = 0;
+
+	//The block is supposed to be a string,
+	//	\0 is a stop
+	for (; p_block[i] != 0 && i < 256; i++){
+		//Encryption easy as fuck, simply adding the block to the bluring key
+		//It s just the way the bluring key is frequently modified that
+		//	makes the encryption strong
+		//Splitted in two lines for obvious uchar usage
+		unsigned char tmp = p_block[i] + m_blurKey[i];
+		rtn[m_crypt.kernel()[i]] = tmp;
+	}
+	//The output must be a 256bytes long array
+	//If the string stops before, fill up with the bluring key
+	for (; i < 256; i++)
+		rtn[m_crypt.kernel()[i]] = m_blurKey[i];
+
+	return rtn;
+}
+
+/////KCLEARER
+
+//_-_-_PUBLIC
+
+//---LIFETIME
+
+/* $Desc Constructor. Generates its own passphrase and kernel.
+ * $Parm /
+ * $Rtrn /
+ */
+kClearer::kClearer(const kCrypt& p_clearer) :
+m_crypt(p_clearer),
+m_checksumInitialized(false)
+{
+
+}
+
+/* $Desc Constructor. Generates its passphrase and kernel out of an XML node.
+ * $Parm p_node QDomNode as the one filled by writeXML().
+ * $Rtrn /
+ */
+kClearer::kClearer(const kClearer& p_clearer) :
+m_crypt(p_clearer.m_crypt),
+m_checksum(p_clearer.m_checksum),
+m_checksumInitialized(p_clearer.m_checksumInitialized)
+{
+
+}
+
+/* $Desc Desctructor.
+ * $Parm /
+ * $Rtrn /
+ */
+kClearer::~kClearer()
+{
+
+}
+
+/* $Desc Copy operator.
+ * $Parm p_crypt reference.
+ * $Rtrn /
+ */
+kClearer&
+kClearer::operator=(const kClearer& p_clearer)
+{
+	m_crypt = p_clearer.m_crypt;
+
+	m_checksum = p_clearer.m_checksum;
+	m_checksumInitialized = p_clearer.m_checksumInitialized;
+
+	return *this;
+}
+
+//---OPERATION
+
+/* $Desc Uncrypt a string. The input size must be a multiple of 256.
+ *	Only kCrypts with the same kernel can decypher the encrypted data.
+ * $Parm p_msg string to encrypt.
+ * $Rtrn Encrypted input.
+ */
+QByteArray
+kClearer::clear(const QByteArray& p_msg, int size)
+{
+	assert(size%256 == 0);
+
+	QByteArray rtn;
+	QByteArray cryptedKernel = p_msg.left(256);
+	QByteArray cryptedMsg = p_msg.mid(256);
+	int blocks = (size-256)/256 + size/1;
+	const unsigned char* data = (const unsigned char*) cryptedMsg.data();
+	unsigned char blurKeyUsed[256];
+
+	//Assumes the clearing key from the header of the message
+	//This header id the encrypted kernel
+	//If the clearing key found doesn t match the checksum computed
+	//	previously, the function fails
+	if(!extractClearKey((const unsigned char*) cryptedKernel.data(), blurKeyUsed))
+		return rtn;
+
+	//Uncrypt every 256bytes block of data
+	for(int i = 0; i < blocks; i++)
+		rtn.append(clearBlock(data + (256*i), blurKeyUsed));
+
+	return rtn;
+}
+
+//_-_-_PRIVATE
+
+/* $Desc Retrieve the bluring key used to generate the received message.
+ * $Parm p_cryptedKernel 256bytes char array corresponding to the encrypted kernel
+ * $Parm p_blurKey Output parameter which is the inverse of the bluring key.
+ * $Rtrn True if the checksum is consistant, else otherwise.
+ */
+bool
+kClearer::extractClearKey(const unsigned char* p_cryptedKernel, unsigned char* p_blurKey)
+{
+	unsigned char checkSum = 0;
+
+	//The kernel is crypted by itself plus the bluring key.
+	//Since the intial kernel and the crypted one are known,
+	//	the bluring key can be easily found
+	for(int i = 0; i < 256; i++){
+		//The encryption is as follow
+		//The value at i is added with the bluring key and moved to kernel[i]
+		//The inverse operation is then to move back the blured value to its original position
+		//	and substract it by its original value
+		//Since the header is the kernel, the original value is known.
+		p_blurKey[i] = (unsigned char) (p_cryptedKernel[m_crypt.kernel()[i]] - m_crypt.kernel()[i]);
+
+		//The checksum is the sum of bluring key's values % 256
+		checkSum += p_blurKey[i];
+	}
+
+	//For the first call, the checksum is unknown since its the sender who decides of it
+	//Thus the first call is always true
+	if(!m_checksumInitialized)
+	{
+		m_checksum = checkSum;
+		m_checksumInitialized = true;
+	}
+
+	return m_checksum == checkSum;
+}
+
+//---INNERPROCESS
+
+/* $Desc Uncrypt a 256bytes block of data.
+ * $Parm p_block data to uncrypt
+ * $Rtrn The uncrypted block in a up to 256bytes QByteArray.
+ */
+QByteArray
+kClearer::clearBlock(const unsigned char* p_block, unsigned char* p_blurKey)
 {
 	QByteArray rtn(256, (char) 0);
 
 	for (int i = 0; i < 256; i++){
-		int tmp = p_block[m_kernel[i]];
-		tmp = (tmp - p_key[i] + 256)%256;
-
+		//Uncryption easy as fuck, simply subtracting the block by the bluring key
+		//It s just the way the bluring key is frequently modified that
+		//	makes the encryption strong
+		//Splitted in two lines for obvious uchar usage
+		unsigned char tmp = p_block[m_crypt.kernel()[i]] - p_blurKey[i];
 		rtn[i] = tmp;
 	}
 

@@ -1,7 +1,11 @@
 #include "kxmlbehavior.h"
 
+#include <assert.h>
+
 void kXmlBehavior::from(const QDomNode& p_root)
 {
+	assert(m_initialized == false);
+
 	QDomNode n = p_root.firstChild();
 	while (!n.isNull()){
 		if (n.isElement()){
@@ -13,6 +17,8 @@ void kXmlBehavior::from(const QDomNode& p_root)
 		}
 		n = n.nextSibling();
 	}
+
+	m_initialized = true;
 }
 
 void kXmlBehavior::to(QDomNode& p_root, const QString& p_name)

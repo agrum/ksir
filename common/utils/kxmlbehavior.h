@@ -26,7 +26,7 @@ public:
 	void to(QDomNode&, const QString&);
 
 protected :
-	kXmlBehavior() {}
+	kXmlBehavior():m_initialized(false) {}
 
 	virtual void readXml(const QString&, const QDomElement&) = 0;
 	virtual void writeXml(QDomNode&) = 0;
@@ -40,6 +40,8 @@ protected :
 
 private:
 	void readFile(const QString&);
+
+	bool m_initialized;
 };
 
 #endif // KXMLBEHAVIOR_H

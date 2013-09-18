@@ -1,45 +1,61 @@
 #include "kdistant.h"
 
-kDistant::kDistant(int p_socketDesc, kQueueW& p_sysQueue):
+#include <QTime>
+#include <assert.h>
+
+/* $Desc Constructor called for a distant system from which the socket
+ *		has already been connected, Normally a client.
+ * $Parm p_socketDesc descriptor of the socket to the distant system.
+ * $Rtrn /.
+ */
+kDistant::kDistant(int p_socketDesc):
 	pLogBehavior("kDistant"),
-	m_sysQueue(p_sysQueue),
-	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(false),
-	m_socketDesc(p_socketDesc),
-	m_socket(NULL),
-	m_crypt(NULL),
-	m_canCrypt(false)
+	m_receiver(&m_socket),
+	m_sender(&m_socket)
 {
-	start();
+	//Set socket
+	m_socket.setSocketDescriptor(p_socketDesc);
 }
 
-kDistant::kDistant(const QDomNode& p_root, kQueueW& p_sysQueue):
+/* $Desc Constructor called for a distant system only known from
+ *		a conf file. Normally a server. This kind of system is responsible
+ *		for keeping its socket opened.
+ * $Parm p_root DOM node holding the information of the distant system.
+ * $Rtrn /.
+ */
+kDistant::kDistant(const QDomNode& p_root):
 	kCore(p_root),
 	pLogBehavior("kDistant"),
-	m_sysQueue(p_sysQueue),
-	m_mustDestroy(false),
 	m_connected(false),
 	m_responsible(true),
-	m_socket(NULL),
-	m_crypt(NULL),
-	m_canCrypt(false)
+	m_receiver(&m_socket),
+	m_sender(&m_socket)
 {
+	//Init system from DOM node
 	from(p_root);
 
+	//Throw exception if the system is null after init
 	if(isNull())
-		logE(pLog::ERROR_NULL, "Responsible distant system null");
+		logE("Responsible distant system null");
 }
 
+/* $Desc Destructor stoping the looping threads. Wait for them to terminate.
+ * $Parm /.
+ * $Rtrn /.
+ */
 kDistant::~kDistant()
 {
-	terminate();
-	wait();
-	if(m_responsible && m_socket)
-		delete m_socket;
+
 }
 
-bool kDistant::alive()
+/* $Desc Destructor stoping the looping threads. Wait for them to terminate.
+ * $Parm /.
+ * $Rtrn /.
+ */
+void
+kDistant::run()
 {
 	QString sysIdentifier = QString("%1 %2 %3:%4")
 			.arg(m_id)
@@ -47,148 +63,65 @@ bool kDistant::alive()
 			.arg(m_addr)
 			.arg(m_port);
 
-	if(m_socket->state() != QAbstractSocket::ConnectedState){
+	//Manage the socket if it s not connected
+	if(m_socket.state() != QAbstractSocket::ConnectedState){
+		//If it was previously connected, mention it
 		if(m_connected){
 			m_connected = false;
 
-			kMsg report(MSG_DISC_SOCK, kMsgHeader::REP);
-			report.add("who", m_id);
-			m_sysQueue.push(report);
+			//Write a report for disconnected distant system
+			kMsg* report = new kMsg(MSG_DISC_SOCK, kMsgHeader::REP);
+			report->add("system", m_id);
+			kComLink::write(report, "mailman");
 
-			logI(kCommonLogExtension::INFO_LOST, sysIdentifier);
+			//Log loss
+			logI(QString("System lost %1").arg(sysIdentifier));
 		}
+		//If this distant system is respopnsible for the connection,
+		//	it tries to reconnect
 		if(m_responsible){
-			m_socket->abort();
-			m_socket->connectToHost(m_addr, m_port);
-			if(m_socket->waitForConnected(1000)){
-				kMsg aliveMsg("Hello", kMsgHeader::INFO, *this);
+			m_socket.abort();
+			m_socket.connectToHost(m_addr, m_port);
+			//If the connection succed, establish comm with the distant system
+			if(m_socket.waitForConnected(1000)){
+				kMsg* aliveMsg = new kMsg("Hello", kMsgHeader::INFO, *this);
 
-				m_mutex.lock();
-				m_sendList.push_back(aliveMsg);
-				m_mutex.unlock();
+				m_sender.comLink().write(aliveMsg);
 			}
-		}
-		else{ //Will never be used anyway
-			m_mutex.lock();
-			delete m_crypt;
-			m_crypt = NULL;
-			m_mustDestroy = true;
-			m_mutex.unlock();
 		}
 	}
 
-	if(!m_connected && m_socket->state() == QAbstractSocket::ConnectedState){
+	//If the connected state is new, mention it
+	if(!m_connected && m_socket.state() == QAbstractSocket::ConnectedState){
 		m_connected = true;
 
-		kMsg report(MSG_CONN_SOCK, kMsgHeader::REP);
-		report.add("who", m_id);
-		m_sysQueue.push(report);
+		//Write a report for connected distant system
+		kMsg* report = new kMsg(MSG_CONN_SOCK, kMsgHeader::REP);
+		report->add("system", m_id);
+		kComLink::write(report, "mailman");
 
-		logI(kCommonLogExtension::INFO_JOINED, sysIdentifier);
-	}
-
-	return m_socket->state() == QAbstractSocket::ConnectedState;
-}
-
-bool kDistant::sendMsg(QList<kMsg> p_list)
-{
-	m_mutex.lock();
-	m_sendList.append(p_list);
-	m_mutex.unlock();
-
-	return true;
-}
-
-QList<kMsg> kDistant::getMsg()
-{
-	QList<kMsg> rtn;
-
-	m_mutex.lock();
-	rtn = m_receiveList;
-	m_receiveList.clear();
-	m_mutex.unlock();
-
-    if(!rtn.empty() && (isNull())){
-		m_id = rtn.first().header().sender();
-		if(m_id == "" && m_type == "client"){ //Give an unique name to the client
-			m_id = rtn.first().header().receiver() + "_" + QTime::currentTime().toString();
-
-			kMsg aliveMsg("GotYourName", kMsgHeader::INFO, *this);
-
-			m_mutex.lock();
-			m_sendList.push_back(aliveMsg);
-			m_mutex.unlock();
-		}
-		logI(kCommonLogExtension::INFO_NAME,
-				   QString("acquired %1 %2 %3").arg(m_id).arg(m_type).arg(m_port));
-	}
-
-	return rtn;
-}
-
-void kDistant::run(){
-	QByteArray tmpBA;
-	bool helpExpected = true;
-	int msgLength;
-
-	m_socket = new QTcpSocket();
-	if(!m_responsible){
-		m_socket->setSocketDescriptor(m_socketDesc);
-	}
-
-	while(true){
-		if(alive()){
-			m_mutex.lock();
-			//Send outgoing messages
-			while(!m_sendList.empty()){
-				kMsg tmp = m_sendList.takeFirst();
-				if(!tmp.outdated()){
-					//qDebug() << "write\n" << tmp.toMsg();
-					tmp.header().setSender(m_sender);
-					tmpBA = tmp.toMsg();
-					if(m_canCrypt)
-						m_socket->write(QByteArray::number(256 * (2 + tmpBA.size()/256)) + "\r\n" + m_crypt->blur(tmpBA) + "\r\n");
-					else if(tmp.name() == "Hello")
-						m_socket->write(QByteArray::number(tmpBA.size()) + "\r\n" + tmpBA + "\r\n");
-					m_socket->waitForBytesWritten(100);
-				}
-				else
-					logW(kCommonLogExtension::WARNING_OUTDATED, "Not send");
-			}
-
-			//Get pending messages
-			m_socket->waitForReadyRead(100);
-			while(m_socket->canReadLine()){
-				if(helpExpected){
-					QByteArray line = m_socket->readLine();
-					msgLength = line.left(line.size() - 2).toInt(NULL, 10);
-					helpExpected = false;
-				}
-				if(!helpExpected && m_socket->bytesAvailable() >= msgLength) {
-					QByteArray msg = m_socket->read(msgLength);
-					if(m_canCrypt)
-						msg = m_crypt->clear(msg, msgLength);
-					helpExpected = true;
-
-					//qDebug() << "read\n" << m_msg;
-					m_receiveList.push_back(kMsg (msg));
-				}
-			}
-			m_mutex.unlock();
-		}
-		msleep(20);
+		//Log new acquitance
+		logI(QString("System joined %1").arg(sysIdentifier));
 	}
 }
 
-void kDistant::readXml(const QString& p_tag, const QDomElement& p_node)
+/* $Desc XML reading behavior.
+ * $Parm p_tag Tag of the element provided.
+ * $Parm p_node node holding the tag + content.
+ * $Rtrn /.
+ */
+void
+kDistant::readXml(const QString& p_tag, const QDomElement& p_node)
 {
 	kCore::readXml(p_tag, p_node);
 	if( p_tag == XML_ADDR )
 		m_addr = p_node.text();
 	if( p_tag == XML_PORT )
 		m_port = p_node.text().toInt();
-	if( p_tag == XML_KNOWNAS )
-		m_sender = p_node.text();
 	if( p_tag == XML_CRYPT )
-		m_crypt = new kCrypt(p_node);
+	{
+		kCrypt crypt(p_node);
+		m_receiver.setCrypt(crypt);
+		m_sender.setCrypt(crypt);
+	}
 }

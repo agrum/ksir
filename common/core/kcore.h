@@ -7,16 +7,20 @@
 class kCore : public kXmlBehavior
 {
 public:
+	//Lifetime
 	kCore();
 	kCore(const QDomNode&);
 	kCore(const kCore&);
+    virtual ~kCore() {}
 	kCore& operator=(const kCore&);
 
+	//Integrity helper
 	bool operator==(const kCore&) const;
 	bool isNull() const;
 
-	QString id() const { return m_id; }
-	QString type() const { return m_type; }
+	//Get
+	const QString& id() const { return m_id; }
+	const QString& type() const { return m_type; }
 
 	//XML
 	virtual void readXml(const QString&, const QDomElement&);

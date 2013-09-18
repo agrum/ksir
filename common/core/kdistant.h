@@ -2,58 +2,50 @@
 #define KDISTANT_H
 
 #include <QtNetwork>
-#include <QThread>
 #include <QMutex>
-#include <QTime>
+#include <QThread>
+
 #include "pomelog.h"
 
-#include "../utils/kcommonlogextension.h"
-#include "../utils/kcrypt.h"
 #include "kcore.h"
 #include "kmsg.h"
-#include "kqueue.h"
+#include "kcomlink.h"
+#include "kreceiver.h"
+#include "ksender.h"
 
-class kDistant : public kCore, public QThread, public pLogBehavior
+class kDistant : public QThread, public kCore, public pLogBehavior
 {
 public:
-	kDistant(int, kQueueW&);
-	kDistant(const QDomNode&, kQueueW&);
+	kDistant(int);
+	kDistant(const QDomNode&);
 	~kDistant();
 
 	int port() const { return m_port; }
-	bool mustDestroy() const { return m_mustDestroy; }
+	kReceiver& receiver() { return m_receiver; }
+	kSender& sender() { return m_sender; }
 
-	bool alive();
-	bool sendMsg(QList<kMsg>);
-	QList<kMsg> getMsg();
-
+	//bool isAlive();
 	void run();
 
+private:
 	//XML
 	virtual void readXml(const QString&, const QDomElement&);
-	virtual void writeXml(QDomNode&) {}
+	virtual void writeXml(QDomNode&) {} //No export of distant systems
+
+	static void threadFuncSender(void* p_this);
+	static void threadFuncReceiver(void* p_this);
 
 private:
 	QString m_addr;
-	QString m_sender;
 	int m_port;
-	QTime m_time;
-	QByteArray m_msgStack;
-	int m_msgStackSize;
 
-	kQueueW& m_sysQueue;
-	QList <kMsg> m_sendList;
-	QList <kMsg> m_receiveList;
-	QMutex m_mutex;
-
-	bool m_mustDestroy;
 	bool m_connected;
 	bool m_responsible;
-	int m_socketDesc;
-	QTcpSocket* m_socket;
+	QTcpSocket m_socket;
+	QMutex m_mutex;
 
-	kCrypt* m_crypt;
-	bool m_canCrypt;
+	kReceiver m_receiver;
+	kSender m_sender;
 };
 
 #define MSG_DISC_SOCK "socket disconnected"

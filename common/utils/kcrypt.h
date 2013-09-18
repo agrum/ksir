@@ -1,11 +1,6 @@
 #ifndef KCRYPT_H
 #define KCRYPT_H
 
-#include <QMap>
-#include <QList>
-#include <QPair>
-#include <QString>
-#include <QDebug>
 #include <QByteArray>
 
 #include "kxmlbehavior.h"
@@ -13,52 +8,94 @@
 class kCrypt : public kXmlBehavior
 {
 public:
+	//Lifetime
 	kCrypt();
-	kCrypt(const QByteArray&, const QByteArray&);
+	kCrypt(const QByteArray&);
 	kCrypt(const QDomNode&);
 	kCrypt(const kCrypt&);
     virtual ~kCrypt();
 	kCrypt& operator=(const kCrypt&);
 
-	QByteArray blur(const QByteArray&);
-	QByteArray clear(const QByteArray&, int);
+	const unsigned char* kernel() const;
 
+private:
 	//XML
 	virtual void readXml(const QString&, const QDomElement&);
 	virtual void writeXml(QDomNode&);
 
-private:
-	bool extractClearKey(const unsigned char*, unsigned char*);
-	void initBlur();
-
-	QByteArray genPassphrase();
+	//Fundamental operations
 	QByteArray genKernel();
-
-	QByteArray blurBlock(const unsigned char*, int*);
-	QByteArray clearBlock(const unsigned char*, unsigned char*);
+	void initKernel();
 
 private:
-    //256 bytes word delivered by the server only once
-    //Never shared uncrypted afterwards
-    //Used as step stone to determine the blurKey used by the other party
-	QByteArray m_passphrase;
-
     //256 bytes combination delivered by the server only once
-    //Never sent uncrypted, nor crypted
-	//Used as combination key
-	QList<unsigned char> m_kernel;
+	//Never sent uncrypted
+	//Used as combination key and header
+	unsigned char m_kernel[256];
+	QByteArray m_kernelStr;
+};
+
+class kBlurer
+{
+public:
+	//Lifetime
+	kBlurer(const kCrypt&);
+	kBlurer(const kBlurer&);
+	virtual ~kBlurer();
+	kBlurer& operator=(const kBlurer&);
+
+	//Usage interface
+	QByteArray blur(const QByteArray&);
+
+private:
+	//Redundant operations
+	QByteArray blurBlock(const unsigned char*);
+
+private:
+	//Instance holding crypting kernel
+	kCrypt m_crypt;
+
+	//Init boolean, enable the use of empty blurer
+	bool m_initialized;
+
+	//256 bytes combination which sum is a multiple of 256
+	//Every time a message needs to be crypted, the blurkey is mixed
+	//But because of its sum property, the checksum is constant
+	unsigned char m_mixer[256];
 
 	//256 bytes key initilized by the system
 	//Never shared uncrypted, nor crypted
 	//Used as additional key to crypt outgoing messages
-	QList<unsigned char> m_blurKey;
+	unsigned char m_blurKey[256];
+};
+
+class kClearer
+{
+public:
+	//Lifetime
+	kClearer(const kCrypt&);
+	kClearer(const kClearer&);
+	virtual ~kClearer();
+	kClearer& operator=(const kClearer&);
+
+	//Usage interface
+	QByteArray clear(const QByteArray&, int);
+
+private:
+	//Fundamental operations
+	bool extractClearKey(const unsigned char*, unsigned char*);
+
+	//Redundant operations
+	QByteArray clearBlock(const unsigned char*, unsigned char*);
+
+private:
+	//Instance holding crypting kernel
+	kCrypt m_crypt;
 
 	//dot product of the blur key used, thus not know for the receiver
 	//but still reconized even if the key s compents are swapped
-	int m_clearSum;
-
-	QByteArray m_passphraseStr;
-	QByteArray m_kernelStr;
+	unsigned char m_checksum;
+	bool m_checksumInitialized;
 };
 
 #endif // KCRYPT_H
