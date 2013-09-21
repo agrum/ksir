@@ -9,7 +9,7 @@
  * $Rtrn /.
  */
 kDistant::kDistant(int p_socketDesc):
-	pLogBehavior("kDistant"),
+	kXmlBehavior("kDistant"),
 	m_connected(false),
 	m_responsible(false),
 	m_receiver(&m_socket),
@@ -25,16 +25,18 @@ kDistant::kDistant(int p_socketDesc):
  * $Parm p_root DOM node holding the information of the distant system.
  * $Rtrn /.
  */
-kDistant::kDistant(const QDomNode& p_root):
-	kCore(p_root),
-	pLogBehavior("kDistant"),
+kDistant::kDistant(const QDomNode& p_node):
+	kXmlBehavior("kDistant"),
 	m_connected(false),
 	m_responsible(true),
 	m_receiver(&m_socket),
 	m_sender(&m_socket)
 {
-	//Init system from DOM node
-	from(p_root);
+	//Init system from XML node
+	from(p_node);
+	m_id = getAttribute(p_node, "id");
+	m_addr = getAttribute(p_node, "addr");
+	m_port = getAttribute(p_node, "port").toInt();
 
 	//Throw exception if the system is null after init
 	if(isNull())
@@ -111,14 +113,9 @@ kDistant::run()
  * $Rtrn /.
  */
 void
-kDistant::readXml(const QString& p_tag, const QDomElement& p_node)
+kDistant::readXml(const QDomNode& p_node, const QString& p_tag)
 {
-	kCore::readXml(p_tag, p_node);
-	if( p_tag == XML_ADDR )
-		m_addr = p_node.text();
-	if( p_tag == XML_PORT )
-		m_port = p_node.text().toInt();
-	if( p_tag == XML_CRYPT )
+	if( p_tag == "crypt" )
 	{
 		kCrypt crypt(p_node);
 		m_receiver.setCrypt(crypt);

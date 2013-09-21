@@ -27,7 +27,7 @@ kCrypt::kCrypt()
  */
 kCrypt::kCrypt(const QDomNode& p_node)
 {
-	from(p_node);
+	m_kernelStr = getText(p_node, "kernel").toLatin1();
 
 	initKernel();
 }
@@ -87,8 +87,7 @@ kCrypt::operator=(const kCrypt& p_crypt)
 void
 kCrypt::readXml(const QString& p_tag, const QDomElement& p_node)
 {
-	if( p_tag == XML_CRYPT_KERNEL )
-        m_kernelStr = p_node.text().toLatin1();
+
 }
 
 /* $Desc XML interface inherited. Fill an XML.
@@ -97,9 +96,9 @@ kCrypt::readXml(const QString& p_tag, const QDomElement& p_node)
  * $Rtrn /.
  */
 void
-kCrypt::writeXml(QDomNode& p_tag)
+kCrypt::writeXml(QDomNode& p_node)
 {
-	addToElement(p_tag, XML_CRYPT_KERNEL, QString(m_kernelStr));
+	addAttribute(p_node, "kernel", QString(m_kernelStr));
 }
 
 //---FUNDAMENTAL

@@ -3,45 +3,32 @@
 
 #include <QtXml>
 
-#define XML_NONE "none"
-#define XML_ID "id"
-#define XML_TYPE "type"
-#define XML_FROM "from"
-#define XML_TO "to"
-#define XML_FILE "file"
-#define XML_ADDR "address"
-#define XML_PORT "port"
-#define XML_KNOWNAS "knownAs"
-#define XML_SERVER "server"
-#define XML_CLIENT "client"
-#define XML_DATABASE "database"
-#define XML_CRYPT "crypt"
-#define XML_CRYPT_PASSPH "passphrase"
-#define XML_CRYPT_KERNEL "kernel"
+#include <pomelog.h>
 
-class kXmlBehavior
+class kXmlBehavior : public pLogBehavior
 {
 public:
-	void from(const QDomNode&);
-	void to(QDomNode&, const QString&);
+	virtual void from(const QDomNode& p_node);
+	virtual void to(QDomNode& p_node, const QString& p_name);
 
 protected :
-	kXmlBehavior():m_initialized(false) {}
+	kXmlBehavior(const QString& p_sign) : pLogBehavior(p_sign) {}
 
-	virtual void readXml(const QString&, const QDomElement&) = 0;
-	virtual void writeXml(QDomNode&) = 0;
+	virtual void readXml(const QDomNode& p_node, const QString& p_name) = 0;
+	virtual void writeXml(QDomNode& p_node) = 0;
 
-	void addToElement(QDomNode&, const QString&, const QString&);
-	void addToElement(QDomNode&, const QString, const double);
-	void addToElement(QDomNode&, const QString, const unsigned int);
-	void addToElement(QDomNode&, const QString, const int);
-	void addToElement(QDomNode&, const QString, const qint64);
-	void addToElement(QDomNode&, const QString, const bool);
+	//----- Gets -----
+	const QString getAttribute(const QDomNode& p_node, const QString& p_name) const;
+	const QString getText(const QDomNode& p_node) const;
+
+	//----- Sets -----
+	void addAttribute(QDomNode& p_node, const QString& p_name, const QString& p_value);
+	void addText(QDomNode& p_node, const QString& p_text);
+
+	QDomNode createNode(QDomNode& p_node, const QString& p_name);
 
 private:
 	void readFile(const QString&);
-
-	bool m_initialized;
 };
 
 #endif // KXMLBEHAVIOR_H

@@ -7,19 +7,21 @@
 
 #include "pomelog.h"
 
-#include "kcore.h"
 #include "kmsg.h"
 #include "kcomlink.h"
 #include "kreceiver.h"
 #include "ksender.h"
 
-class kDistant : public QThread, public kCore, public pLogBehavior
+#include "../utils/kxmlbehavior.h"
+
+class kDistant : public QThread, public kXmlBehavior
 {
 public:
 	kDistant(int);
 	kDistant(const QDomNode&);
 	~kDistant();
 
+	const QString& addr() const { return m_addr; }
 	int port() const { return m_port; }
 	kReceiver& receiver() { return m_receiver; }
 	kSender& sender() { return m_sender; }
@@ -29,13 +31,15 @@ public:
 
 private:
 	//XML
-	virtual void readXml(const QString&, const QDomElement&);
-	virtual void writeXml(QDomNode&) {} //No export of distant systems
+	void to(QDomNode&, const QString&) {}
+	void readXml(QDomNode& p_node, const QString& p_tag);
+	void writeXml(QDomNode&) {}
 
 	static void threadFuncSender(void* p_this);
 	static void threadFuncReceiver(void* p_this);
 
 private:
+	QString m_id;
 	QString m_addr;
 	int m_port;
 

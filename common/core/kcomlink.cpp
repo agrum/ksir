@@ -38,7 +38,7 @@ kComLink::kComLink(const QString& p_id)
  * $Rtrn /.
  */
 void
-kComLink::write(kMsg* p_msg)
+kComLink::write(kPRC<kMsg>& p_msg)
 {
 	assert(p_msg != NULL);
 
@@ -57,7 +57,7 @@ kComLink::write(kMsg* p_msg)
  * $Rtrn /.
  */
 void
-kComLink::write(kMsg* p_msg, const QString& p_dst)
+kComLink::write(kPRC<kMsg>& p_msg, const QString& p_dst)
 {
 	assert(p_msg != NULL);
 
@@ -82,10 +82,10 @@ kComLink::write(kMsg* p_msg, const QString& p_dst)
  * $Parm .
  * $Rtrn p_msg pointer to the oldest message in the queue.
  */
-kMsg*
+kPRC<kMsg>
 kComLink::read()
 {
-	kMsg* rtn;
+	kPRC<kMsg> rtn;
 
 	m_comLinkLock.lock();
 		if(m_queue.empty())

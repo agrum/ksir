@@ -20,8 +20,9 @@ public:
 
 private:
 	//XML
-	virtual void readXml(const QString&, const QDomElement&);
-	virtual void writeXml(QDomNode&);
+	void from(const QDomNode&) {}
+	void readXml(const QString&, const QDomElement&) {}
+	void writeXml(QDomNode& p_node);
 
 	//Fundamental operations
 	QByteArray genKernel();

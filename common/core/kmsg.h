@@ -1,48 +1,54 @@
-/*!
- * \file Commandes/CCommand.h
- *
- */
 #ifndef KMSG_H
 #define KMSG_H
 
-#include <QtCore>
-#include <QtXml>
-#include <QTime>
+#include <QString>
+#include <QByteArray>
 
-#include "kmsgheader.h"
+#include "../utils/kxmlbehavior.h"
+#include "../utils/kprc.h"
 
-class kMsg
+class kMsg : public kXmlBehavior
 {
 public :
-	kMsg();
-	kMsg(const QString&, kMsgHeader::Type);
-	kMsg(const QString&, kMsgHeader::Type, const kCore&);
-	kMsg(const kMsg&);
-	kMsg(const QByteArray&);
-	kMsg& operator=(const kMsg&);
+	enum Type{
+		NONE,
+		INFO, //Casual information transition between systems
+		RPRT, //Meant to stay in the same system
+		RQST, //Meant to ask for something
+		ANSW //Meant to answer a request
+	};
 
-	bool outdated();
+	kMsg(const QString& p_name, Type p_type);
+	kMsg(const QDomNode& p_node);
+	kMsg(const kMsg& p_msg);
+	virtual ~kMsg();
 
-    const QString name() const { return m_info.doctype().name(); }
-	kMsgHeader& header() { return m_header; }
-	QDomNode& dom() { return m_info; }
-	QDomNode node(const QString& p_node) { return m_info.firstChildElement(p_node); }
-	QString text(const QString& p_node) { return m_info.firstChildElement(p_node).text(); }
-	void add(const QString&, const QString&);
+	//Get
+	int id() const { return m_id; }
+	const QString& name() const { return m_name; }
+	Type type() const { return m_type; }
 
-	bool operator==(const kMsg&);
-	bool is(const QString&, const kMsgHeader::Type);
-	bool exist(const QString&);
-	bool find(const QString&, QDomNode&);
-	QByteArray toMsg();
-	QString print(QString);
+	//Operation
+	virtual void add(const QString& p_tag, const kPRC<kXmlBehavior>& p_entity) = 0;
+	virtual void get(const QString& p_tag, kPRC<kXmlBehavior>& p_entity) = 0;
+	virtual bool exist(const QString& p_tag) = 0;
 
-protected :
-	QTime m_time;
-	QDomDocument m_info;
-	kMsgHeader m_header;
+private:
+	kMsg& operator=(const kMsg&) {}
 
-	QByteArray m_content;
+	//XML (never create content out of a node, except for the attributes)
+	void from(const QDomNode&) {}
+	void readXml(const QDomNode&, const QString&) {}
+
+private:
+	static unsigned int m_idCount;
+	static QMutex m_mutex;
+
+	unsigned int m_id;
+	QString m_name;
+	Type m_type;
+
+	//QMap<QString, kPRC<kXmlBehavior> > m_entityMap;
 };
 
 
