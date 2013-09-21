@@ -3,13 +3,17 @@
 #include <QTime>
 #include <assert.h>
 
+#include "../utils/msginner.h"
+#include "../utils/msgoutter.h"
+#include "../utils/string.h"
+
 /* $Desc Constructor called for a distant system from which the socket
  *		has already been connected, Normally a client.
  * $Parm p_socketDesc descriptor of the socket to the distant system.
  * $Rtrn /.
  */
 kDistant::kDistant(int p_socketDesc):
-	kXmlBehavior("kDistant"),
+	XmlBehavior("Distant"),
 	m_connected(false),
 	m_responsible(false),
 	m_receiver(&m_socket),
@@ -26,7 +30,7 @@ kDistant::kDistant(int p_socketDesc):
  * $Rtrn /.
  */
 kDistant::kDistant(const QDomNode& p_node):
-	kXmlBehavior("kDistant"),
+	XmlBehavior("Distant"),
 	m_connected(false),
 	m_responsible(true),
 	m_receiver(&m_socket),
@@ -39,7 +43,7 @@ kDistant::kDistant(const QDomNode& p_node):
 	m_port = getAttribute(p_node, "port").toInt();
 
 	//Throw exception if the system is null after init
-	if(isNull())
+	if(m_id.isNull())
 		logE("Responsible distant system null");
 }
 
@@ -59,9 +63,8 @@ kDistant::~kDistant()
 void
 kDistant::run()
 {
-	QString sysIdentifier = QString("%1 %2 %3:%4")
+	QString sysIdentifier = QString("%1 %3:%4")
 			.arg(m_id)
-			.arg(m_type)
 			.arg(m_addr)
 			.arg(m_port);
 
@@ -72,9 +75,9 @@ kDistant::run()
 			m_connected = false;
 
 			//Write a report for disconnected distant system
-			kMsg* report = new kMsg(MSG_DISC_SOCK, kMsgHeader::REP);
-			report->add("system", m_id);
-			kComLink::write(report, "mailman");
+			PRC<Msg> report = new MsgInner("MSG_DISC_SOCK", Msg::RPRT);
+			report->add("system", new String(m_id));
+			ComLink::write(report, "mailman");
 
 			//Log loss
 			logI(QString("System lost %1").arg(sysIdentifier));
@@ -86,7 +89,7 @@ kDistant::run()
 			m_socket.connectToHost(m_addr, m_port);
 			//If the connection succed, establish comm with the distant system
 			if(m_socket.waitForConnected(1000)){
-				kMsg* aliveMsg = new kMsg("Hello", kMsgHeader::INFO, *this);
+				PRC<Msg> aliveMsg = new MsgOutter("Hello", Msg::INFO);
 
 				m_sender.comLink().write(aliveMsg);
 			}
@@ -98,9 +101,9 @@ kDistant::run()
 		m_connected = true;
 
 		//Write a report for connected distant system
-		kMsg* report = new kMsg(MSG_CONN_SOCK, kMsgHeader::REP);
-		report->add("system", m_id);
-		kComLink::write(report, "mailman");
+		PRC<Msg> report = new MsgInner(MSG_CONN_SOCK, Msg::RPRT);
+		report->add("system", new String(m_id));
+		ComLink::write(report, "mailman");
 
 		//Log new acquitance
 		logI(QString("System joined %1").arg(sysIdentifier));
@@ -117,7 +120,7 @@ kDistant::readXml(const QDomNode& p_node, const QString& p_tag)
 {
 	if( p_tag == "crypt" )
 	{
-		kCrypt crypt(p_node);
+		Crypt crypt(p_node);
 		m_receiver.setCrypt(crypt);
 		m_sender.setCrypt(crypt);
 	}

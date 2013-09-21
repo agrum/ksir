@@ -7,8 +7,8 @@
 
 #include <pomelog.h>
 
-#include "kcomlink.h"
-#include "../utils/kcrypt.h"
+#include "../utils/comlink.h"
+#include "../utils/crypt.h"
 
 class kSender : public QThread, public pLogBehavior
 {
@@ -16,8 +16,8 @@ public:
 	kSender(QTcpSocket*);
 	~kSender();
 
-	kComLink& comLink() { return m_comLink; }
-	void setCrypt(const kCrypt&);
+	ComLink& comLink() { return m_comLink; }
+	void setCrypt(const Crypt&);
 
 	void run();
 
@@ -25,7 +25,7 @@ private:
 	QTcpSocket* m_socket;
 	QMutex m_mutex;
 
-	kComLink m_comLink;
+	ComLink m_comLink;
 	kBlurer* m_blurer;
 };
 

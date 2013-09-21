@@ -7,26 +7,28 @@
 #include <QString>
 #include <QWaitCondition>
 
-#include "../utils/kprc.h"
-#include "kmsg.h"
+#include "prc.h"
+#include "msg.h"
 
-class kComLink
+namespace ksir {
+
+class ComLink
 {
 public:
 	//Lifetime
-	kComLink(const QString& p_id = "");
+	ComLink(const QString& p_id = "");
 
 	//Get
 	const QString& id() { return m_id; }
 
 	//Operation
-	void write(kPRC<kMsg>& p_msg);
-	static void write(kPRC<kMsg>& p_msg, const QString& p_dst);
-	kPRC<kMsg> read();
+	void write(PRC<Msg>& p_msg);
+	static void write(PRC<Msg>& p_msg, const QString& p_dst);
+	PRC<Msg> read();
 
 private:
 	//Static directory used to conenct comLinks with the same id
-	static QMap<QString, kComLink*> s_comLinkDirectory;
+	static QMap<QString, ComLink*> s_comLinkDirectory;
 	static QMutex s_comLinkDirectoryLock;
 	static QWaitCondition s_waitConditionNewLink;
 	static int s_uniqueId;
@@ -36,10 +38,12 @@ private:
 	//Queue of message left for the reader
 	//The instance write its message in its own queue to avoid
 	//	throwing away messages if the other party isn t there yet
-	QQueue<kPRC<kMsg> > m_queue;
+	QQueue<PRC<Msg> > m_queue;
 
 	QMutex m_comLinkLock;
 	QWaitCondition m_waitConditionNewMsg;
 };
+
+}
 
 #endif // KCOMLINK_H

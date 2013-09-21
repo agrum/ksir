@@ -1,13 +1,15 @@
-#include "kcomlink.h"
+#include "comlink.h"
 
 #include <assert.h>
 
 #define COMLINK_MAX_BUF 250
 
-QMap<QString, kComLink*> kComLink::s_comLinkDirectory;
-QMutex kComLink::s_comLinkDirectoryLock;
-QWaitCondition kComLink::s_waitConditionNewLink;
-int kComLink::s_uniqueId = 0;
+using namespace ksir;
+
+QMap<QString, ComLink*> ComLink::s_comLinkDirectory;
+QMutex ComLink::s_comLinkDirectoryLock;
+QWaitCondition ComLink::s_waitConditionNewLink;
+int ComLink::s_uniqueId = 0;
 
 //Lifetime
 
@@ -16,7 +18,7 @@ int kComLink::s_uniqueId = 0;
  * $Parm p_id name shared with an other comLink.
  * $Rtrn /.
  */
-kComLink::kComLink(const QString& p_id)
+ComLink::ComLink(const QString& p_id)
 {
 	QString uniqueId = p_id;
 
@@ -33,12 +35,12 @@ kComLink::kComLink(const QString& p_id)
 	s_comLinkDirectoryLock.unlock();
 }
 
-/* $Desc Push a pointer to a message in the calling kComLink queue.
+/* $Desc Push a pointer to a message in the calling ComLink queue.
  * $Parm p_msg pointer to an existing message.
  * $Rtrn /.
  */
 void
-kComLink::write(kPRC<kMsg>& p_msg)
+ComLink::write(PRC<Msg>& p_msg)
 {
 	assert(p_msg != NULL);
 
@@ -51,17 +53,17 @@ kComLink::write(kPRC<kMsg>& p_msg)
 	m_comLinkLock.unlock();
 }
 
-/* $Desc Push a pointer to a message in the desired kComLink queue.
+/* $Desc Push a pointer to a message in the desired ComLink queue.
  * $Parm p_msg pointer to an existing message.
  * $Parm p_dst destination comLink's id.
  * $Rtrn /.
  */
 void
-kComLink::write(kPRC<kMsg>& p_msg, const QString& p_dst)
+ComLink::write(PRC<Msg>& p_msg, const QString& p_dst)
 {
 	assert(p_msg != NULL);
 
-	kComLink* dstComLink;
+	ComLink* dstComLink;
 
 	//Getthe com linkd esired, or wait for its creation
 	s_comLinkDirectoryLock.lock();
@@ -82,10 +84,10 @@ kComLink::write(kPRC<kMsg>& p_msg, const QString& p_dst)
  * $Parm .
  * $Rtrn p_msg pointer to the oldest message in the queue.
  */
-kPRC<kMsg>
-kComLink::read()
+PRC<Msg>
+ComLink::read()
 {
-	kPRC<kMsg> rtn;
+	PRC<Msg> rtn;
 
 	m_comLinkLock.lock();
 		if(m_queue.empty())

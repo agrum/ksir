@@ -2,12 +2,13 @@
 #define KMSG_H
 
 #include <QString>
-#include <QByteArray>
 
-#include "../utils/kxmlbehavior.h"
-#include "../utils/kprc.h"
+#include "xmlbehavior.h"
+#include "prc.h"
 
-class kMsg : public kXmlBehavior
+namespace ksir {
+
+class Msg : public XmlBehavior
 {
 public :
 	enum Type{
@@ -18,10 +19,10 @@ public :
 		ANSW //Meant to answer a request
 	};
 
-	kMsg(const QString& p_name, Type p_type);
-	kMsg(const QDomNode& p_node);
-	kMsg(const kMsg& p_msg);
-	virtual ~kMsg();
+	Msg(const QString& p_name, Type p_type);
+	Msg(const QDomNode& p_node);
+	Msg(const Msg& p_msg);
+	virtual ~Msg();
 
 	//Get
 	int id() const { return m_id; }
@@ -29,18 +30,18 @@ public :
 	Type type() const { return m_type; }
 
 	//Operation
-	virtual void add(const QString& p_tag, const kPRC<kXmlBehavior>& p_entity) = 0;
-	virtual void get(const QString& p_tag, kPRC<kXmlBehavior>& p_entity) = 0;
+	virtual void add(const QString& p_tag, const PRC<XmlBehavior>& p_entity) = 0;
+	virtual void get(const QString& p_tag, PRC<XmlBehavior>& p_entity) = 0;
 	virtual bool exist(const QString& p_tag) = 0;
 
-private:
-	kMsg& operator=(const kMsg&) {}
+protected:
+	Msg& operator=(const Msg&) { return *this; }
 
 	//XML (never create content out of a node, except for the attributes)
 	void from(const QDomNode&) {}
 	void readXml(const QDomNode&, const QString&) {}
 
-private:
+protected:
 	static unsigned int m_idCount;
 	static QMutex m_mutex;
 
@@ -48,8 +49,9 @@ private:
 	QString m_name;
 	Type m_type;
 
-	//QMap<QString, kPRC<kXmlBehavior> > m_entityMap;
+	//QMap<QString, PRC<XmlBehavior> > m_entityMap;
 };
 
+}
 
 #endif // ____KMSG_H____

@@ -16,29 +16,34 @@ INCLUDEPATH += ../../pomelog/src/include
 LIBS += -L../../pomelog/build-pomelog-Desktop-Release/lib \
         -lpomelog
 
-SOURCES += utils/kxmlbehavior.cpp \
-	core/kmsg.cpp \
+SOURCES += \
 	core/kdistant.cpp \
-	utils/kcrypt.cpp \
-    core/kcomlink.cpp \
     core/kmailman.cpp \
     core/ksender.cpp \
     core/kreceiver.cpp \
-    core/kmsginner.cpp \
-    core/kmsgoutter.cpp
+    utils/string.cpp \
+    utils/comlink.cpp \
+    utils/crypt.cpp \
+    utils/msg.cpp \
+    utils/msginner.cpp \
+    utils/xmlbehavior.cpp \
+    utils/msgoutter.cpp
 
-HEADERS += utils/kxmlbehavior.h \
-	core/kmsg.h \
+HEADERS += \
 	core/kdistant.h \
 	include/ksir_common.h \
-	utils/kcrypt.h \
-    core/kcomlink.h \
     core/kmailman.h \
     core/ksender.h \
     core/kreceiver.h \
-    utils/kprc.h \
-    core/kmsginner.h \
-    core/kmsgoutter.h
+    utils/prc.h \
+    utils/string.h \
+    utils/comlink.h \
+    utils/crypt.h \
+    utils/msginner.h \
+    utils/msg.h \
+    utils/msgoutter.h \
+    utils/xmlbehavior.h \
+    utils/prc.h
 
 OTHER_FILES += \
     conf.d/serverlist.xml

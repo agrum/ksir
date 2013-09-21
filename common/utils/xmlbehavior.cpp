@@ -1,8 +1,17 @@
-#include "kxmlbehavior.h"
+#include "xmlbehavior.h"
 
 #include <assert.h>
 
-void kXmlBehavior::from(const QDomNode& p_root)
+using namespace ksir;
+
+XmlBehavior::XmlBehavior(const QString& p_sign) :
+	pLogBehavior(p_sign),
+	m_initialized(false)
+{
+
+}
+
+void XmlBehavior::from(const QDomNode& p_root)
 {
 	if(m_initialized == true)
 		logE("Already initialized from XML content");
@@ -11,7 +20,7 @@ void kXmlBehavior::from(const QDomNode& p_root)
 	while (!n.isNull()){
 		if (n.isElement()){
 			QDomElement e = n.toElement();
-			if(e.tagName() == XML_FILE)
+			if(e.tagName() == "xmlAddFile")
 				readFile(e.text());
 			else
 				readXml(n, e.tagName());
@@ -22,7 +31,7 @@ void kXmlBehavior::from(const QDomNode& p_root)
 	m_initialized = true;
 }
 
-void kXmlBehavior::to(QDomNode& p_node, const QString& p_name)
+void XmlBehavior::to(QDomNode& p_node, const QString& p_name) const
 {
 	if(p_node.firstChild().nodeType() == QDomNode::TextNode)
 	   logE("Can't create a child to a node with text");
@@ -34,7 +43,7 @@ void kXmlBehavior::to(QDomNode& p_node, const QString& p_name)
 	writeXml(child);
 }
 
-void kXmlBehavior::readFile(const QString& p_filename)
+void XmlBehavior::readFile(const QString& p_filename)
 {
 	QFile file(p_filename);
 
@@ -43,37 +52,35 @@ void kXmlBehavior::readFile(const QString& p_filename)
 		if(config.setContent(&file, true))
 			from(config.firstChild());
 		else
-			logE("kXmlBehavior::readFile() : parsing error " + p_filename);
+			logE("XmlBehavior::readFile() : parsing error " + p_filename);
 		file.close();
 	}
 	else
-		logE("kXmlBehavior::readFile() : can't open " + p_filename);
+		logE("XmlBehavior::readFile() : can't open " + p_filename);
 }
 
 const QString
-kXmlBehavior::getAttribute(const QDomNode& p_node, const QString& p_attribute) const
+XmlBehavior::getAttribute(const QDomNode& p_node, const QString& p_attribute) const
 {
 	return p_node.toElement().attribute(p_attribute);
 }
 
 const QString
-kXmlBehavior::getText(const QDomNode& p_node) const
+XmlBehavior::getText(const QDomNode& p_node) const
 {
 	return p_node.toElement().text();
 }
 
 void
-kXmlBehavior::addAttribute(QDomNode& p_node, const QString& p_attribute, const QString& p_value)
+XmlBehavior::addAttribute(QDomNode& p_node, const QString& p_attribute, const QString& p_value) const
 {
-	p_node.toElement().setAttribute(
-		QString::fromStdString(p_attribute),
-		QString::fromStdString(p_value));
+	p_node.toElement().setAttribute(p_attribute, p_value);
 }
 
 void
-kXmlBehavior::addText(QDomNode& p_node, const QString& p_value)
+XmlBehavior::addText(QDomNode& p_node, const QString& p_value) const
 {
-	if(m_cursor.hasChildNodes())
+	if(p_node.hasChildNodes())
 		logE("Try to add text to a node with children");
 
 	p_node.appendChild(p_node.ownerDocument().createTextNode(p_value));

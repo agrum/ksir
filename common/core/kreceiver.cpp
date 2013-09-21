@@ -1,6 +1,9 @@
 #include "kreceiver.h"
 
 #include <QByteArray>
+#include <QDomDocument>
+
+#include "../utils/msgoutter.h"
 
 kReceiver::kReceiver(QTcpSocket* p_socket):
 	pLogBehavior("Receiver"),
@@ -19,7 +22,7 @@ kReceiver::~kReceiver()
 }
 
 void
-kReceiver::setCrypt(const kCrypt& p_crypt)
+kReceiver::setCrypt(const Crypt& p_crypt)
 {
 	m_mutex.lock();
 		if(m_clearer != NULL)
@@ -31,8 +34,9 @@ kReceiver::setCrypt(const kCrypt& p_crypt)
 void
 kReceiver::run()
 {
-	kMsg* msg;
+	PRC<Msg> msg;
 	QByteArray msgByteArray = "";
+	QDomDocument doc;
 	int msgLength = -1;
 	bool fullyRead = false;
 	bool crypted;
@@ -64,11 +68,12 @@ kReceiver::run()
 				m_mutex.unlock();
 
 				fullyRead = true;
-				msg = new kMsg(msgByteArray);
+				doc.setContent(msgByteArray);
+				msg = new MsgOutter(doc);
 
 				//No other msg than Hello accepted as uncrypted
 				if(crypted || msg->name() == "Hello")
-					kComLink::write(msg, "mailman");
+					ComLink::write(msg, "mailman");
 				else
 					logE("Received an uncrypted message not safe");
 			}

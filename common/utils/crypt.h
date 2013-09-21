@@ -3,26 +3,28 @@
 
 #include <QByteArray>
 
-#include "kxmlbehavior.h"
+#include "xmlbehavior.h"
 
-class kCrypt : public kXmlBehavior
+namespace ksir {
+
+class Crypt : public XmlBehavior
 {
 public:
 	//Lifetime
-	kCrypt();
-	kCrypt(const QByteArray&);
-	kCrypt(const QDomNode&);
-	kCrypt(const kCrypt&);
-    virtual ~kCrypt();
-	kCrypt& operator=(const kCrypt&);
+	Crypt();
+	Crypt(const QByteArray&);
+	Crypt(const QDomNode&);
+	Crypt(const Crypt&);
+	virtual ~Crypt();
+	Crypt& operator=(const Crypt&);
 
 	const unsigned char* kernel() const;
 
 private:
 	//XML
 	void from(const QDomNode&) {}
-	void readXml(const QString&, const QDomElement&) {}
-	void writeXml(QDomNode& p_node);
+	void readXml(const QDomNode&, const QString&) {}
+	void writeXml(QDomNode& p_node) const;
 
 	//Fundamental operations
 	QByteArray genKernel();
@@ -40,7 +42,7 @@ class kBlurer
 {
 public:
 	//Lifetime
-	kBlurer(const kCrypt&);
+	kBlurer(const Crypt&);
 	kBlurer(const kBlurer&);
 	virtual ~kBlurer();
 	kBlurer& operator=(const kBlurer&);
@@ -54,7 +56,7 @@ private:
 
 private:
 	//Instance holding crypting kernel
-	kCrypt m_crypt;
+	Crypt m_crypt;
 
 	//Init boolean, enable the use of empty blurer
 	bool m_initialized;
@@ -74,7 +76,7 @@ class kClearer
 {
 public:
 	//Lifetime
-	kClearer(const kCrypt&);
+	kClearer(const Crypt&);
 	kClearer(const kClearer&);
 	virtual ~kClearer();
 	kClearer& operator=(const kClearer&);
@@ -91,12 +93,14 @@ private:
 
 private:
 	//Instance holding crypting kernel
-	kCrypt m_crypt;
+	Crypt m_crypt;
 
 	//dot product of the blur key used, thus not know for the receiver
 	//but still reconized even if the key s compents are swapped
 	unsigned char m_checksum;
 	bool m_checksumInitialized;
 };
+
+}
 
 #endif // KCRYPT_H

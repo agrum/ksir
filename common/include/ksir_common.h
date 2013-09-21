@@ -2,7 +2,6 @@
 #define KSIR_COMMON_H
 
 #include "../core/kdistant.h"
-#include "../utils/kcommonlogextension.h"
-#include "../utils/kcrypt.h"
+#include "../core/kmailman.h"
 
 #endif // KSIR_COMMON_H

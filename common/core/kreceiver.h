@@ -7,8 +7,8 @@
 
 #include <pomelog.h>
 
-#include "kcomlink.h"
-#include "../utils/kcrypt.h"
+#include "../utils/comlink.h"
+#include "../utils/crypt.h"
 
 class kReceiver : public QThread, public pLogBehavior
 {
@@ -16,7 +16,7 @@ public:
 	kReceiver(QTcpSocket*);
 	~kReceiver();
 
-	void setCrypt(const kCrypt&);
+	void setCrypt(const Crypt&);
 
 	void run();
 

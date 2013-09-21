@@ -1,8 +1,10 @@
-#include "kcrypt.h"
+#include "crypt.h"
 
 #include <assert.h>
 
 #include <QDebug>
+
+using namespace ksir;
 
 /////KCRYPT
 
@@ -14,7 +16,8 @@
  * $Parm /
  * $Rtrn /
  */
-kCrypt::kCrypt()
+Crypt::Crypt() :
+	XmlBehavior("Crypt")
 {
 	m_kernelStr = genKernel();
 
@@ -25,9 +28,10 @@ kCrypt::kCrypt()
  * $Parm p_node QDomNode as the one filled by writeXML().
  * $Rtrn /
  */
-kCrypt::kCrypt(const QDomNode& p_node)
+Crypt::Crypt(const QDomNode& p_node) :
+	XmlBehavior("Crypt")
 {
-	m_kernelStr = getText(p_node, "kernel").toLatin1();
+	m_kernelStr = getAttribute(p_node, "kernel").toLatin1();
 
 	initKernel();
 }
@@ -36,18 +40,20 @@ kCrypt::kCrypt(const QDomNode& p_node)
  * $Parm p_kernel Kernel in hex.
  * $Rtrn /
  */
-kCrypt::kCrypt(const QByteArray& p_kernel):
-m_kernelStr(p_kernel)
+Crypt::Crypt(const QByteArray& p_kernel) :
+	XmlBehavior("Crypt"),
+	m_kernelStr(p_kernel)
 {
 	initKernel();
 }
 
-/* $Desc Constructor. Copy an existing kCrypt.
+/* $Desc Constructor. Copy an existing Crypt.
  * $Parm p_crypt reference.
  * $Rtrn /
  */
-kCrypt::kCrypt(const kCrypt& p_crypt):
-m_kernelStr(p_crypt.m_kernelStr)
+Crypt::Crypt(const Crypt& p_crypt) :
+	XmlBehavior("Crypt"),
+	m_kernelStr(p_crypt.m_kernelStr)
 {
 	memcpy(m_kernel, p_crypt.m_kernel, 256);
 }
@@ -56,7 +62,7 @@ m_kernelStr(p_crypt.m_kernelStr)
  * $Parm /
  * $Rtrn /
  */
-kCrypt::~kCrypt()
+Crypt::~Crypt()
 {
 
 }
@@ -65,8 +71,8 @@ kCrypt::~kCrypt()
  * $Parm p_crypt reference.
  * $Rtrn /
  */
-kCrypt&
-kCrypt::operator=(const kCrypt& p_crypt)
+Crypt&
+Crypt::operator=(const Crypt& p_crypt)
 {
 	m_kernelStr = p_crypt.m_kernelStr;
 
@@ -79,36 +85,25 @@ kCrypt::operator=(const kCrypt& p_crypt)
 
 //---XMLBEHAVIOUR
 
-/* $Desc XML interface inherited. Set from an XML.
- * $Parm p_tag Tag of the current node.
- * $Parm p_tag Current node.
- * $Rtrn /.
- */
-void
-kCrypt::readXml(const QString& p_tag, const QDomElement& p_node)
-{
-
-}
-
 /* $Desc XML interface inherited. Fill an XML.
  * $Parm p_tag Tag of the current node.
  * $Parm p_tag Current node.
  * $Rtrn /.
  */
 void
-kCrypt::writeXml(QDomNode& p_node)
+Crypt::writeXml(QDomNode& p_node) const
 {
 	addAttribute(p_node, "kernel", QString(m_kernelStr));
 }
 
 //---FUNDAMENTAL
 
-/* $Desc Generate randomly a kernel for a brand new kCrypt.
+/* $Desc Generate randomly a kernel for a brand new Crypt.
  * $Parm /
  * $Rtrn 512 char long string in hexadecimal.
  */
 QByteArray
-kCrypt::genKernel()
+Crypt::genKernel()
 {
 	QString rtn;
 	QList<int> set;
@@ -137,7 +132,7 @@ kCrypt::genKernel()
  * $Parm /
  * $Rtrn /
  */
-kBlurer::kBlurer(const kCrypt& p_crypt) :
+kBlurer::kBlurer(const Crypt& p_crypt) :
 m_crypt(p_crypt)
 {
 	//The mixer modify frequently the bluring key.
@@ -192,7 +187,7 @@ kBlurer::operator=(const kBlurer& p_blurer)
 //---OPERATION
 
 /* $Desc Crypt a string. The output size is a multiple of 256.
- *	Only kCrypts with the same kernel can decypher the encrypted data.
+ *	Only Crypts with the same kernel can decypher the encrypted data.
  * $Parm p_msg string to encrypt.
  * $Rtrn Encrypted input.
  */
@@ -264,7 +259,7 @@ kBlurer::blurBlock(const unsigned char* p_block)
  * $Parm /
  * $Rtrn /
  */
-kClearer::kClearer(const kCrypt& p_clearer) :
+kClearer::kClearer(const Crypt& p_clearer) :
 m_crypt(p_clearer),
 m_checksumInitialized(false)
 {
@@ -310,7 +305,7 @@ kClearer::operator=(const kClearer& p_clearer)
 //---OPERATION
 
 /* $Desc Uncrypt a string. The input size must be a multiple of 256.
- *	Only kCrypts with the same kernel can decypher the encrypted data.
+ *	Only Crypts with the same kernel can decypher the encrypted data.
  * $Parm p_msg string to encrypt.
  * $Rtrn Encrypted input.
  */

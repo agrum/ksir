@@ -5,19 +5,17 @@
 
 #include <QMutex>
 
-template<class T> class kPRC
+namespace ksir {
+
+template<class T> class PRC
 {
-protected:
-	T* m_obj;
-	int* m_refcount;
-	QMutex* m_mutex;
 
 public:
-	kPRC();
-	kPRC(T* p_obj);
-	kPRC(const kPRC& p_prc);
-	~kPRC();
-	kPRC& operator = (const kPRC& p_prc);
+	PRC();
+	PRC(T* p_obj);
+	PRC(const PRC& p_prc);
+	~PRC();
+	PRC& operator = (const PRC& p_prc);
 
 	int refCount() const;
 
@@ -27,26 +25,35 @@ public:
 	operator T*();
 	operator const T*() const;
 
-	operator kPRC<const T> () const;
+	operator PRC<const T> () const;
 
-	template <class U> operator kPRC<U> ();
-	template <class U> friend class kPRC;
+	template <class U> operator PRC<U> ();
+	template <class U> friend class PRC;
 
-	template <class T> friend
-		kPRC<T> const_ptr_cast(const kPRC<const T>& pPtrToCast);
-	template <class T> friend
-		kPRC<T> const_ptr_cast(const kPRC<T>& pPtrToCast);
+	template <class U> friend
+		PRC<U> const_ptr_cast(const PRC<const U>& pPtrToCast);
+	template <class U> friend
+		PRC<U> const_ptr_cast(const PRC<U>& pPtrToCast);
 
 private:
 	void addRef();
 	void release();
 	bool empty() const;
+
+protected:
+	T* m_obj;
+	int* m_refcount;
+	QMutex* m_mutex;
 };
 
+}
+
 /////////////////////////////////////////////////////
+///
+using namespace ksir;
 
 template<class T> inline
-kPRC<T>::kPRC() :
+PRC<T>::PRC() :
 	m_obj(NULL),
 	m_refcount(NULL),
 	m_mutex(NULL)
@@ -55,7 +62,7 @@ kPRC<T>::kPRC() :
 }
 
 template<class T> inline
-kPRC<T>::kPRC(T* p_obj) :
+PRC<T>::PRC(T* p_obj) :
 	m_obj(p_obj),
 	m_refcount(NULL),
 	m_mutex(NULL)
@@ -68,7 +75,7 @@ kPRC<T>::kPRC(T* p_obj) :
 }
 
 template<class T> inline
-kPRC<T>::kPRC(const kPRC<T>& p_prc):
+PRC<T>::PRC(const PRC<T>& p_prc):
 	m_obj(p_prc.m_obj),
 	m_refcount(p_prc.m_refcount),
 	m_mutex(p_prc.m_mutex)
@@ -80,22 +87,19 @@ kPRC<T>::kPRC(const kPRC<T>& p_prc):
 }
 
 template<class T> inline
-kPRC<T>::~kPRC()
+PRC<T>::~PRC()
 {
 	release();
 }
 
 template<class T> inline
-kPRC<T>&
-kPRC<T>::operator = (const kPRC<T>& p_prc)
+PRC<T>&
+PRC<T>::operator = (const PRC<T>& p_prc)
 {
 	if(m_refcount == p_prc.m_refcount)
-		return;
+		return *this;
 
 	release();
-
-	if(!p_prc.m_obj)
-		return;
 
 	m_obj = p_prc.m_obj;
 	m_refcount = p_prc.m_refcount;
@@ -106,7 +110,7 @@ kPRC<T>::operator = (const kPRC<T>& p_prc)
 	return *this;
 }
 
-template<class _Tp> inline void kPRC<_Tp>::addRef()
+template<class _Tp> inline void PRC<_Tp>::addRef()
 {
 	if(!m_mutex)
 		return;
@@ -118,7 +122,7 @@ template<class _Tp> inline void kPRC<_Tp>::addRef()
 	m_mutex->lock();
 }
 
-template<class T> inline void kPRC<T>::release()
+template<class T> inline void PRC<T>::release()
 {
 	if(!m_mutex)
 		return;
@@ -145,54 +149,58 @@ template<class T> inline void kPRC<T>::release()
 
 template<class T> inline
 bool
-kPRC<T>::empty() const
+PRC<T>::empty() const
 {
 	return m_obj == NULL;
 }
 
 template<class T> inline
 int
-kPRC<T>::getRefCount() const
+PRC<T>::refCount() const
 {
-	if(m_refcount)
-		return *m_refcount;
-	else
-		return 0;
+	int rtn = 0;
+
+	m_mutex->lock();
+		if(m_refcount)
+			rtn = *m_refcount;
+	m_mutex->unlock();
+
+	return rtn;
 }
 
 template<class T> inline
 T*
-kPRC<T>::operator -> ()
+PRC<T>::operator -> ()
 {
-	return obj;
+	return m_obj;
 }
 
 template<class T> inline
 const T*
-kPRC<T>::operator -> () const
+PRC<T>::operator -> () const
 {
-	return obj;
+	return m_obj;
 }
 
 template<class T> inline
 
-kPRC<T>::operator T* ()
+PRC<T>::operator T* ()
 {
-	return obj;
+	return m_obj;
 }
 
 template<class T> inline
 
-kPRC<T>::operator const T*() const
+PRC<T>::operator const T*() const
 {
-	return obj;
+	return m_obj;
 }
 
 template<class T> inline
 
-kPRC<T>::operator kPRC<const T>() const
+PRC<T>::operator PRC<const T>() const
 {
-	kPRC<const T> rtn;
+	PRC<const T> rtn;
 
 	rtn.m_obj = m_obj;
 	rtn.m_refcount = m_refcount;
@@ -204,9 +212,9 @@ kPRC<T>::operator kPRC<const T>() const
 
 template<class T> template <class U> inline
 
-kPRC<T>::operator kPRC<U>()
+PRC<T>::operator PRC<U>()
 {
-	kPRC<U> rtn;
+	PRC<U> rtn;
 
 	rtn.m_obj = static_cast<U*> (m_obj);
 	rtn.m_refcount = m_refcount;
@@ -217,10 +225,10 @@ kPRC<T>::operator kPRC<U>()
 }
 
 template <class T> inline
-kPRC<T>
-const_ptr_cast(const kPRC<const T>& pPtrToCast)
+PRC<T>
+const_ptr_cast(const PRC<const T>& pPtrToCast)
 {
-	kPRC<T> rtn;
+	PRC<T> rtn;
 
 	rtn.m_obj = const_cast<T*> (pPtrToCast.m_obj);
 	rtn.m_refcount = pPtrToCast.m_refcount;
@@ -231,8 +239,8 @@ const_ptr_cast(const kPRC<const T>& pPtrToCast)
 }
 
 template <class T> inline
-kPRC<T>
-const_ptr_cast(const kPRC<T>& pPtrToCast)
+PRC<T>
+const_ptr_cast(const PRC<T>& pPtrToCast)
 {
 	return pPtrToCast;
 }

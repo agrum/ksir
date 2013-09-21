@@ -7,14 +7,13 @@
 
 #include "pomelog.h"
 
-#include "kmsg.h"
-#include "kcomlink.h"
+#include "../utils/comlink.h"
+#include "../utils/xmlbehavior.h"
+
 #include "kreceiver.h"
 #include "ksender.h"
 
-#include "../utils/kxmlbehavior.h"
-
-class kDistant : public QThread, public kXmlBehavior
+class kDistant : public QThread, public XmlBehavior
 {
 public:
 	kDistant(int);
@@ -32,8 +31,8 @@ public:
 private:
 	//XML
 	void to(QDomNode&, const QString&) {}
-	void readXml(QDomNode& p_node, const QString& p_tag);
-	void writeXml(QDomNode&) {}
+	void readXml(const QDomNode& p_node, const QString& p_tag);
+	void writeXml(QDomNode&) const {}
 
 	static void threadFuncSender(void* p_this);
 	static void threadFuncReceiver(void* p_this);
