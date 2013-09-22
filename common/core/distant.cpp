@@ -1,4 +1,4 @@
-#include "kdistant.h"
+#include "distant.h"
 
 #include <QTime>
 #include <assert.h>
@@ -12,7 +12,7 @@
  * $Parm p_socketDesc descriptor of the socket to the distant system.
  * $Rtrn /.
  */
-kDistant::kDistant(int p_socketDesc):
+Distant::Distant(int p_socketDesc):
 	XmlBehavior("Distant"),
 	m_connected(false),
 	m_responsible(false),
@@ -29,7 +29,7 @@ kDistant::kDistant(int p_socketDesc):
  * $Parm p_root DOM node holding the information of the distant system.
  * $Rtrn /.
  */
-kDistant::kDistant(const QDomNode& p_node):
+Distant::Distant(const QDomNode& p_node):
 	XmlBehavior("Distant"),
 	m_connected(false),
 	m_responsible(true),
@@ -51,7 +51,7 @@ kDistant::kDistant(const QDomNode& p_node):
  * $Parm /.
  * $Rtrn /.
  */
-kDistant::~kDistant()
+Distant::~Distant()
 {
 
 }
@@ -61,7 +61,7 @@ kDistant::~kDistant()
  * $Rtrn /.
  */
 void
-kDistant::run()
+Distant::run()
 {
 	QString sysIdentifier = QString("%1 %3:%4")
 			.arg(m_id)
@@ -116,7 +116,7 @@ kDistant::run()
  * $Rtrn /.
  */
 void
-kDistant::readXml(const QDomNode& p_node, const QString& p_tag)
+Distant::readXml(const QDomNode& p_node, const QString& p_tag)
 {
 	if( p_tag == "crypt" )
 	{

@@ -1,10 +1,10 @@
 #ifndef KMAILMAN_H
 #define KMAILMAN_H
 
-class kMailMan
+class MailMan
 {
 public:
-	kMailMan();
+	MailMan();
 };
 
 #endif // KMAILMAN_H

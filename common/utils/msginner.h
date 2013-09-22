@@ -1,6 +1,13 @@
 #ifndef KMSGINNER_H
 #define KMSGINNER_H
 
+///Inherits from the abstract Msg class. This kind of message is
+///dedicated for communication inside the program.
+///This class actually holds ina  map the PRC provided.
+///The PRC provided as input and output are not copied.
+///It s the user concern to know whether the entity should be copied
+///before transfer or if the correspondant should share the same instance.
+
 #include <QMap>
 
 #include "msg.h"
@@ -10,6 +17,7 @@ namespace ksir {
 class MsgInner : public Msg
 {
 public:
+	//Lifetime
 	MsgInner(const QString& p_name, Type p_type);
 	MsgInner(const MsgInner& p_msg);
 	~MsgInner();
@@ -22,7 +30,6 @@ public:
 
 private:
 	//XML
-	void readXml(const QDomNode&, const QString&) {}
 	void writeXml(QDomNode& p_node) const;
 
 private:

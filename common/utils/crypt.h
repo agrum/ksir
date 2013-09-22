@@ -1,6 +1,19 @@
 #ifndef KCRYPT_H
 #define KCRYPT_H
 
+///This class is used to encrypt any kind of content.
+///The encrypted output message s size is the input one plus 256 bytes.
+///This is a personnal project with a big flaw, the kernel must be shared
+///among parties the first time the key has been created.
+///The way it should be is, the server generates a kernel and sends it to
+///the client, only once. The way the kernel must be send is still unclear,
+///but the flaw in security will surely happens here.
+///Once the server and the client knows about the kernel, everything goes fine
+///and the security of the encryption seems bulletproof enough to me.
+///Since I don t know shit about security, I may be damn wrong. Anyway, the
+///fact that the kernel must be shared once is a deadly falw by itself.
+///Still, had fun writing this shit.
+
 #include <QByteArray>
 
 #include "xmlbehavior.h"
@@ -18,12 +31,10 @@ public:
 	virtual ~Crypt();
 	Crypt& operator=(const Crypt&);
 
-	const unsigned char* kernel() const;
+	const unsigned char* kernel() const { return m_kernel; }
 
 private:
 	//XML
-	void from(const QDomNode&) {}
-	void readXml(const QDomNode&, const QString&) {}
 	void writeXml(QDomNode& p_node) const;
 
 	//Fundamental operations

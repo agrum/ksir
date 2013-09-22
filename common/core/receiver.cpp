@@ -1,11 +1,11 @@
-#include "kreceiver.h"
+#include "receiver.h"
 
 #include <QByteArray>
 #include <QDomDocument>
 
 #include "../utils/msgoutter.h"
 
-kReceiver::kReceiver(QTcpSocket* p_socket):
+Receiver::Receiver(QTcpSocket* p_socket):
 	pLogBehavior("Receiver"),
 	m_socket(p_socket),
 	m_clearer(NULL)
@@ -13,7 +13,7 @@ kReceiver::kReceiver(QTcpSocket* p_socket):
 	start();
 }
 
-kReceiver::~kReceiver()
+Receiver::~Receiver()
 {
 	m_mutex.lock();
 		if(m_clearer != NULL)
@@ -22,7 +22,7 @@ kReceiver::~kReceiver()
 }
 
 void
-kReceiver::setCrypt(const Crypt& p_crypt)
+Receiver::setCrypt(const Crypt& p_crypt)
 {
 	m_mutex.lock();
 		if(m_clearer != NULL)
@@ -32,7 +32,7 @@ kReceiver::setCrypt(const Crypt& p_crypt)
 }
 
 void
-kReceiver::run()
+Receiver::run()
 {
 	PRC<Msg> msg;
 	QByteArray msgByteArray = "";

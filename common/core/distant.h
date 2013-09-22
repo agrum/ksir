@@ -10,20 +10,20 @@
 #include "../utils/comlink.h"
 #include "../utils/xmlbehavior.h"
 
-#include "kreceiver.h"
-#include "ksender.h"
+#include "receiver.h"
+#include "sender.h"
 
-class kDistant : public QThread, public XmlBehavior
+class Distant : public QThread, public XmlBehavior
 {
 public:
-	kDistant(int);
-	kDistant(const QDomNode&);
-	~kDistant();
+	Distant(int);
+	Distant(const QDomNode&);
+	~Distant();
 
 	const QString& addr() const { return m_addr; }
 	int port() const { return m_port; }
-	kReceiver& receiver() { return m_receiver; }
-	kSender& sender() { return m_sender; }
+	Receiver& receiver() { return m_receiver; }
+	Sender& sender() { return m_sender; }
 
 	//bool isAlive();
 	void run();
@@ -47,8 +47,8 @@ private:
 	QTcpSocket m_socket;
 	QMutex m_mutex;
 
-	kReceiver m_receiver;
-	kSender m_sender;
+	Receiver m_receiver;
+	Sender m_sender;
 };
 
 #define MSG_DISC_SOCK "socket disconnected"

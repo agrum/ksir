@@ -1,6 +1,12 @@
 #ifndef KMSG_H
 #define KMSG_H
 
+///Key class of the project. The message supposedly can hold anything
+///Consider the Msg class paired with the ComLinks as an elaborate
+///event system.
+///The message is the event while the ComLink is the mean used to
+///transfer the event.
+
 #include <QString>
 
 #include "xmlbehavior.h"
@@ -19,6 +25,7 @@ public :
 		ANSW //Meant to answer a request
 	};
 
+	//Lifetime
 	Msg(const QString& p_name, Type p_type);
 	Msg(const QDomNode& p_node);
 	Msg(const Msg& p_msg);
@@ -37,10 +44,6 @@ public :
 protected:
 	Msg& operator=(const Msg&) { return *this; }
 
-	//XML (never create content out of a node, except for the attributes)
-	void from(const QDomNode&) {}
-	void readXml(const QDomNode&, const QString&) {}
-
 protected:
 	static unsigned int m_idCount;
 	static QMutex m_mutex;
@@ -48,8 +51,6 @@ protected:
 	unsigned int m_id;
 	QString m_name;
 	Type m_type;
-
-	//QMap<QString, PRC<XmlBehavior> > m_entityMap;
 };
 
 }

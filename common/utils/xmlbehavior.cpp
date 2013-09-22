@@ -4,13 +4,10 @@
 
 using namespace ksir;
 
-XmlBehavior::XmlBehavior(const QString& p_sign) :
-	pLogBehavior(p_sign),
-	m_initialized(false)
-{
-
-}
-
+/* $Desc Construct itself and sign up with the logger.
+ * $Parm p_sign Signature used  for logging.
+ * $Rtrn /.
+ */
 void XmlBehavior::from(const QDomNode& p_root)
 {
 	if(m_initialized == true)
@@ -31,6 +28,10 @@ void XmlBehavior::from(const QDomNode& p_root)
 	m_initialized = true;
 }
 
+/* $Desc Convert the object to an XML node. The node provided
+ * $Parm p_sign Signature used  for logging.
+ * $Rtrn /.
+ */
 void XmlBehavior::to(QDomNode& p_node, const QString& p_name) const
 {
 	if(p_node.firstChild().nodeType() == QDomNode::TextNode)
@@ -43,6 +44,73 @@ void XmlBehavior::to(QDomNode& p_node, const QString& p_name) const
 	writeXml(child);
 }
 
+/* $Desc Construct itself and sign up with the logger.
+ * $Parm p_sign Signature used  for logging.
+ * $Rtrn /.
+ */
+XmlBehavior::XmlBehavior(const QString& p_sign) :
+	pLogBehavior(p_sign),
+	m_initialized(false)
+{
+
+}
+
+/* $Desc Return the desired attribute from the node itself.
+ *	Nothing if the attribute doesn t exist.
+ * $Parm p_node Node holding the attribute desired.
+ * $Parm p_attribute Name of the attribute researched.
+ * $Rtrn Value of the attribute as a string.
+ */
+const QString
+XmlBehavior::getAttribute(const QDomNode& p_node, const QString& p_attribute) const
+{
+	return p_node.toElement().attribute(p_attribute);
+}
+
+/* $Desc Return the content of the node if any.
+ * $Parm p_node Node holding the information desired.
+ * $Rtrn Content of the node as a string.
+ */
+const QString
+XmlBehavior::getText(const QDomNode& p_node) const
+{
+	return p_node.toElement().text();
+}
+
+/* $Desc Add an attribute to the node. If it already exists, it s
+ *	over written.
+ * $Parm p_node Node on which to write.
+ * $Parm p_attribute name of the attribute to write.
+ * $Parm p_value Value to give to the attribute.
+ * $Rtrn /.
+ */
+void
+XmlBehavior::addAttribute(QDomNode& p_node, const QString& p_attribute, const QString& p_value) const
+{
+	p_node.toElement().setAttribute(p_attribute, p_value);
+}
+
+/* $Desc Add text inside the node s markups. If any already exists, it s
+ *	over written.
+ * $Parm p_node Node on which to write.
+ * $Parm p_value Text to fill in.
+ * $Rtrn /.
+ */
+void
+XmlBehavior::addText(QDomNode& p_node, const QString& p_value) const
+{
+	if(p_node.hasChildNodes())
+		logE("Try to add text to a node with children");
+
+	p_node.appendChild(p_node.ownerDocument().createTextNode(p_value));
+}
+
+/* $Desc Extend research for configuration file by building
+ *	new document from file pathes. Thos edocuments are then
+ *	read as the original was.
+ * $Parm p_filename path to the file to read.
+ * $Rtrn /.
+ */
 void XmlBehavior::readFile(const QString& p_filename)
 {
 	QFile file(p_filename);
@@ -57,31 +125,4 @@ void XmlBehavior::readFile(const QString& p_filename)
 	}
 	else
 		logE("XmlBehavior::readFile() : can't open " + p_filename);
-}
-
-const QString
-XmlBehavior::getAttribute(const QDomNode& p_node, const QString& p_attribute) const
-{
-	return p_node.toElement().attribute(p_attribute);
-}
-
-const QString
-XmlBehavior::getText(const QDomNode& p_node) const
-{
-	return p_node.toElement().text();
-}
-
-void
-XmlBehavior::addAttribute(QDomNode& p_node, const QString& p_attribute, const QString& p_value) const
-{
-	p_node.toElement().setAttribute(p_attribute, p_value);
-}
-
-void
-XmlBehavior::addText(QDomNode& p_node, const QString& p_value) const
-{
-	if(p_node.hasChildNodes())
-		logE("Try to add text to a node with children");
-
-	p_node.appendChild(p_node.ownerDocument().createTextNode(p_value));
 }

@@ -2,6 +2,9 @@
 
 #include <assert.h>
 
+#include "msginner.h"
+#include "string.h"
+
 #define COMLINK_MAX_BUF 250
 
 using namespace ksir;
@@ -18,7 +21,8 @@ int ComLink::s_uniqueId = 0;
  * $Parm p_id name shared with an other comLink.
  * $Rtrn /.
  */
-ComLink::ComLink(const QString& p_id)
+ComLink::ComLink(const QString& p_id) :
+	pLogBehavior("ComLink")
 {
 	QString uniqueId = p_id;
 
@@ -27,7 +31,7 @@ ComLink::ComLink(const QString& p_id)
 		if(uniqueId == "")
 			uniqueId = (s_uniqueId++);
 		if((s_comLinkDirectory.value(uniqueId, NULL)) != NULL)
-			return; //TODO error
+			logE("Try to create a ComLink with an already registered id");
 
 		m_id = uniqueId;
 		s_comLinkDirectory.insert(uniqueId, this);
@@ -35,7 +39,18 @@ ComLink::ComLink(const QString& p_id)
 	s_comLinkDirectoryLock.unlock();
 }
 
-/* $Desc Push a pointer to a message in the calling ComLink queue.
+/* $Desc Destructor, removes the id from the static directory of existing ComLinks.
+ * $Parm /.
+ * $Rtrn /.
+ */
+ComLink::~ComLink()
+{
+	s_comLinkDirectoryLock.lock();
+		s_comLinkDirectory.remove(m_id);
+	s_comLinkDirectoryLock.unlock();
+}
+
+/* $Desc Push a pointer to a message in the calling ComLink s queue.
  * $Parm p_msg pointer to an existing message.
  * $Rtrn /.
  */
@@ -53,7 +68,11 @@ ComLink::write(PRC<Msg>& p_msg)
 	m_comLinkLock.unlock();
 }
 
-/* $Desc Push a pointer to a message in the desired ComLink queue.
+/* $Desc Push a message in the desired ComLink queue.
+ *	If it doesn t exist, the function will wait for it
+ *	to be created.
+ *	If the corresponding ComLink is full, an error will
+ *	be thrown.
  * $Parm p_msg pointer to an existing message.
  * $Parm p_dst destination comLink's id.
  * $Rtrn /.
@@ -75,7 +94,7 @@ ComLink::write(PRC<Msg>& p_msg, const QString& p_dst)
 	dstComLink->m_comLinkLock.lock();
 		dstComLink->m_queue.enqueue(p_msg);
 		if(dstComLink->m_queue.length() > COMLINK_MAX_BUF)
-			return; //TODO error
+			dstComLink->logE("Try to push a message in a full ComLink");
 		dstComLink->m_waitConditionNewMsg.wakeAll();
 	dstComLink->m_comLinkLock.unlock();
 }
@@ -96,4 +115,19 @@ ComLink::read()
 	m_comLinkLock.unlock();
 
 	return rtn;
+}
+
+/* $Desc Ask the mailman to redirect every message whose name is p_name
+ *	to it.
+ * $Parm p_name Nane of the message on which the ownership is asked.
+ * $Rtrn /.
+ */
+void
+ComLink::askOwnershipOver(const QString& p_name)
+{
+	PRC<Msg> request = new MsgInner(MSG_ASK_OWNERSHIP, Msg::RQST);
+
+	request->add("name", new String(p_name));
+
+	ComLink::write(request, MAILMAN);
 }

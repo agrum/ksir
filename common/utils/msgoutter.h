@@ -1,6 +1,10 @@
 #ifndef KMSGOUTTER_H
 #define KMSGOUTTER_H
 
+///This kind of message is dedicated for communication through
+///sockets. The entity provided are converted to XML and added
+///to a DomDocument. The entity are not conserved.
+
 #include "msg.h"
 
 namespace ksir {
@@ -8,6 +12,7 @@ namespace ksir {
 class MsgOutter : public Msg
 {
 public:
+	//Lifetime
 	MsgOutter(const QString& p_name, Type p_type);
 	MsgOutter(const QDomNode& p_node);
 	MsgOutter(const MsgOutter& p_msg);

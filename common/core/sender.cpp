@@ -1,9 +1,9 @@
-#include "ksender.h"
+#include "sender.h"
 
 #include <QByteArray>
 #include <QDomDocument>
 
-kSender::kSender(QTcpSocket* p_socket):
+Sender::Sender(QTcpSocket* p_socket):
 	pLogBehavior("Sender"),
 	m_socket(p_socket),
 	m_blurer(NULL)
@@ -11,7 +11,7 @@ kSender::kSender(QTcpSocket* p_socket):
 	start();
 }
 
-kSender::~kSender()
+Sender::~Sender()
 {
 	m_mutex.lock();
 		if(m_blurer != NULL)
@@ -20,7 +20,7 @@ kSender::~kSender()
 }
 
 void
-kSender::setCrypt(const Crypt& p_crypt)
+Sender::setCrypt(const Crypt& p_crypt)
 {
 	m_mutex.lock();
 		if(m_blurer != NULL)
@@ -30,7 +30,7 @@ kSender::setCrypt(const Crypt& p_crypt)
 }
 
 void
-kSender::run()
+Sender::run()
 {
 	PRC<Msg> msg;
 	QByteArray msgByteArray = "";

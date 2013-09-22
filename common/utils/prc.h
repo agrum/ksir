@@ -1,6 +1,18 @@
 #ifndef KPRC_H
 #define KPRC_H
 
+///This template adds a reference counting to any class used in the template
+///The pointer held must be allocated externally.
+///However as soon as this pointer is send inside a PRC (Proxy Reference Counter),
+///it is the PRC job to deallcate it.
+///This will happen whenever no PRC holds this pointer.
+///The counter  holds the number of PRCs holding the same pointer.
+///However, to work properly, this class is bound to specific usage :
+///A same PRC can t be used in multiple threads. Multiple PRC holding the
+///same pointer may be used, but not the SAME PRC. Meaning, pointers to  PRC
+///shouldn t exist as for usage of usage of reference.
+///PRC MUST be used as local variables.
+
 #include <assert.h>
 
 #include <QMutex>
@@ -11,14 +23,17 @@ template<class T> class PRC
 {
 
 public:
+	//Lifetime
 	PRC();
 	PRC(T* p_obj);
 	PRC(const PRC& p_prc);
 	~PRC();
 	PRC& operator = (const PRC& p_prc);
 
+	//Access
 	int refCount() const;
 
+	//Operations
 	T* operator -> ();
 	const T* operator -> () const;
 
@@ -38,7 +53,6 @@ public:
 private:
 	void addRef();
 	void release();
-	bool empty() const;
 
 protected:
 	T* m_obj;
@@ -145,13 +159,6 @@ template<class T> inline void PRC<T>::release()
 		delete m_mutex;
 		m_mutex = NULL;
 	}
-}
-
-template<class T> inline
-bool
-PRC<T>::empty() const
-{
-	return m_obj == NULL;
 }
 
 template<class T> inline

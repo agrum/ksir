@@ -2,6 +2,9 @@
 
 using namespace ksir;
 
+
+//Lifetime
+
 String::String() :
 	QString(),
 	XmlBehavior("String") {}
@@ -30,6 +33,8 @@ String::String(QStringDataPtr dd) :
 	QString(dd),
 	XmlBehavior("String") {}
 String::~String() { ((QString*) this)->~QString(); }
+
+//XML
 
 void
 String::readXml(const QDomNode& p_node, const QString&)

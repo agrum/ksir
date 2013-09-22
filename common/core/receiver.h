@@ -1,5 +1,5 @@
-#ifndef KSENDER_H
-#define KSENDER_H
+#ifndef KRECEIVER_H
+#define KRECEIVER_H
 
 #include <QtNetwork>
 #include <QThread>
@@ -10,13 +10,12 @@
 #include "../utils/comlink.h"
 #include "../utils/crypt.h"
 
-class kSender : public QThread, public pLogBehavior
+class Receiver : public QThread, public pLogBehavior
 {
 public:
-	kSender(QTcpSocket*);
-	~kSender();
+	Receiver(QTcpSocket*);
+	~Receiver();
 
-	ComLink& comLink() { return m_comLink; }
 	void setCrypt(const Crypt&);
 
 	void run();
@@ -25,8 +24,7 @@ private:
 	QTcpSocket* m_socket;
 	QMutex m_mutex;
 
-	ComLink m_comLink;
-	kBlurer* m_blurer;
+	kClearer* m_clearer;
 };
 
-#endif // KSENDER_H
+#endif // KRECEIVER_H
