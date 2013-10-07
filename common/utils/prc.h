@@ -49,6 +49,8 @@ public:
 		PRC<U> const_ptr_cast(const PRC<const U>& pPtrToCast);
 	template <class U> friend
 		PRC<U> const_ptr_cast(const PRC<U>& pPtrToCast);
+	template <class U, class V> friend
+	PRC<U> dynamic_ptr_cast(const PRC<V>& pPtrToCast);
 
 private:
 	void addRef();
@@ -226,18 +228,18 @@ PRC<T>::operator PRC<U>()
 	rtn.m_obj = static_cast<U*> (m_obj);
 	rtn.m_refcount = m_refcount;
 	rtn.m_mutex = m_mutex;
-	rtn.addref();
+	rtn.addRef();
 
 	return rtn;
 }
 
-template <class T> inline
-PRC<T>
-const_ptr_cast(const PRC<const T>& pPtrToCast)
+template <class U> inline
+PRC<U>
+const_ptr_cast(const PRC<const U>& pPtrToCast)
 {
-	PRC<T> rtn;
+	PRC<U> rtn;
 
-	rtn.m_obj = const_cast<T*> (pPtrToCast.m_obj);
+	rtn.m_obj = const_cast<U*> (pPtrToCast.m_obj);
 	rtn.m_refcount = pPtrToCast.m_refcount;
 	rtn.m_mutex = pPtrToCast.m_mutex;
 	rtn.addref();
@@ -245,11 +247,28 @@ const_ptr_cast(const PRC<const T>& pPtrToCast)
 	return rtn;
 }
 
-template <class T> inline
-PRC<T>
-const_ptr_cast(const PRC<T>& pPtrToCast)
+template <class U> inline
+PRC<U>
+const_ptr_cast(const PRC<U>& pPtrToCast)
 {
 	return pPtrToCast;
+}
+
+template <class U, class V> inline
+PRC<U>
+dynamic_ptr_cast(const PRC<V>& pPtrToCast)
+{
+	PRC<U> rtn;
+	rtn.m_obj = dynamic_cast<U*> (pPtrToCast.m_obj);
+
+	// obj might be NULL if the cast failed:
+	if(rtn.m_obj != NULL)
+	{
+		rtn.m_refcount = pPtrToCast.m_refcount;
+		rtn.addRef();
+	}
+
+	return rtn;
 }
 
 #endif // KPRC_H

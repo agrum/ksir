@@ -14,6 +14,8 @@
 ///The reading process is blocking too. As soon as the function has been
 ///called, the thread will be blocked until a message arrives in the ComLink.
 ///The reading function should then be called in looping threads.
+///
+///The ComLink is thread safe from the inside
 
 #include <QMutex>
 #include <QQueue>
@@ -23,11 +25,8 @@
 
 #include <pomelog.h>
 
-#include "prc.h"
-#include "msg.h"
-
-#define MSG_ASK_OWNERSHIP "ask_ownership"
-#define MAILMAN "mailman"
+#include "../utils/prc.h"
+#include "../utils/msg.h"
 
 namespace ksir {
 

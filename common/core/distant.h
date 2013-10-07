@@ -1,41 +1,51 @@
 #ifndef KDISTANT_H
 #define KDISTANT_H
 
+///Class defining a distant system. A distant system is an interface
+///with an other program. The communication is going on through TCP socket.
+///An internal thread tries to keep the connection alive (only if this
+///distant system was the one initiating the connexion).
+///A distant system holds two objects, a sender and a receiver.
+///The sender has a ComLink. All the message in the queue of this comLink
+///are sent as XML formated message to the system on the other end of the
+///socket.
+///The receiver is acquiring the incoming XML formated messages. The messages
+///are directly forwarded to the mailman.
+
 #include <QtNetwork>
 #include <QMutex>
 #include <QThread>
 
 #include "pomelog.h"
 
-#include "../utils/comlink.h"
 #include "../utils/xmlbehavior.h"
 
+#include "comlink.h"
 #include "receiver.h"
 #include "sender.h"
+
+namespace ksir {
 
 class Distant : public QThread, public XmlBehavior
 {
 public:
+	//Lifetime
 	Distant(int);
 	Distant(const QDomNode&);
 	~Distant();
 
+	//Access
 	const QString& addr() const { return m_addr; }
 	int port() const { return m_port; }
-	Receiver& receiver() { return m_receiver; }
-	Sender& sender() { return m_sender; }
+	Receiver& getReceiver() { return m_receiver; }
+	Sender& getSender() { return m_sender; }
 
-	//bool isAlive();
+	//QThread
 	void run();
 
 private:
 	//XML
-	void to(QDomNode&, const QString&) {}
 	void readXml(const QDomNode& p_node, const QString& p_tag);
-	void writeXml(QDomNode&) const {}
-
-	static void threadFuncSender(void* p_this);
-	static void threadFuncReceiver(void* p_this);
 
 private:
 	QString m_id;
@@ -51,7 +61,6 @@ private:
 	Sender m_sender;
 };
 
-#define MSG_DISC_SOCK "socket disconnected"
-#define MSG_CONN_SOCK "socket connected"
+}
 
 #endif // KDISTANT_H

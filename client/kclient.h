@@ -12,9 +12,9 @@
 
 #include "ksir_common.h"
 
-#include "kclientuimngr.h"
+using namespace ksir;
 
-class kClient : public kCore, public QThread, public pLogBehavior
+class kClient : public XmlBehavior, public QThread
 {
 public:
 	kClient(const QDomNode&);
@@ -22,18 +22,13 @@ public:
 
 	void run();
 
+private:
 	//XML
-	virtual void readXml(const QString&, const QDomElement&);
+	void readXml(const QDomNode&, const QString&);
 
 private:
-	void manageQueue();
-
-private:
-	QList<kDistant*> m_serverList;
-	kDistant* m_currentServer;
-
-	kQueueR m_queue;
-	kClientUIMngr m_uiMngr;
+	QList<Distant*> m_serverList;
+	Distant* m_currentServer;
 };
 
 #endif // KCLIENT_H

@@ -7,6 +7,11 @@
 #include "../utils/msgoutter.h"
 #include "../utils/string.h"
 
+#include "mailman.h"
+
+using namespace ksir;
+
+
 /* $Desc Constructor called for a distant system from which the socket
  *		has already been connected, Normally a client.
  * $Parm p_socketDesc descriptor of the socket to the distant system.
@@ -75,9 +80,9 @@ Distant::run()
 			m_connected = false;
 
 			//Write a report for disconnected distant system
-			PRC<Msg> report = new MsgInner("MSG_DISC_SOCK", Msg::RPRT);
+			PRC<Msg> report = new MsgInner(MSG_DISC_SOCK, Msg::RPRT);
 			report->add("system", new String(m_id));
-			ComLink::write(report, "mailman");
+			ComLink::write(report, MAILMAN);
 
 			//Log loss
 			logI(QString("System lost %1").arg(sysIdentifier));
@@ -91,7 +96,7 @@ Distant::run()
 			if(m_socket.waitForConnected(1000)){
 				PRC<Msg> aliveMsg = new MsgOutter("Hello", Msg::INFO);
 
-				m_sender.comLink().write(aliveMsg);
+				m_sender.getComLink().write(aliveMsg);
 			}
 		}
 	}
@@ -103,7 +108,7 @@ Distant::run()
 		//Write a report for connected distant system
 		PRC<Msg> report = new MsgInner(MSG_CONN_SOCK, Msg::RPRT);
 		report->add("system", new String(m_id));
-		ComLink::write(report, "mailman");
+		ComLink::write(report, MAILMAN);
 
 		//Log new acquitance
 		logI(QString("System joined %1").arg(sysIdentifier));

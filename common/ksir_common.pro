@@ -12,38 +12,42 @@ TARGET = ksir_common
 TEMPLATE = lib
 DESTDIR = lib
 
-INCLUDEPATH += ../../pomelog/src/include
-LIBS += -L../../pomelog/build-pomelog-Desktop-Release/lib \
-        -lpomelog
+QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += \
-	core/kdistant.cpp \
-    core/kmailman.cpp \
-    core/ksender.cpp \
-    core/kreceiver.cpp \
     utils/string.cpp \
-    utils/comlink.cpp \
     utils/crypt.cpp \
     utils/msg.cpp \
     utils/msginner.cpp \
     utils/xmlbehavior.cpp \
-    utils/msgoutter.cpp
+    utils/msgoutter.cpp \
+    core/distant.cpp \
+    core/mailman.cpp \
+    core/receiver.cpp \
+    core/sender.cpp \
+    core/comlink.cpp
 
 HEADERS += \
-	core/kdistant.h \
 	include/ksir_common.h \
-    core/kmailman.h \
-    core/ksender.h \
-    core/kreceiver.h \
     utils/prc.h \
     utils/string.h \
-    utils/comlink.h \
     utils/crypt.h \
     utils/msginner.h \
     utils/msg.h \
     utils/msgoutter.h \
     utils/xmlbehavior.h \
-    utils/prc.h
+    utils/prc.h \
+    core/distant.h \
+    core/mailman.h \
+    core/receiver.h \
+    core/sender.h \
+    core/comlink.h
 
 OTHER_FILES += \
-    conf.d/serverlist.xml
+	conf.d/serverlist.xml
+
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../pomelog/build/release/lib/ -lpomelog
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../pomelog/build/debug/lib/ -lpomelog
+
+INCLUDEPATH += $$PWD/../../pomelog/include
+DEPENDPATH += $$PWD/../../pomelog/include

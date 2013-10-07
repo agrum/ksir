@@ -122,6 +122,17 @@ Crypt::genKernel()
     return rtn.toLatin1();
 }
 
+/* $Desc Set the kernel out of its string.
+ * $Parm /.
+ * $Rtrn /.
+ */
+void
+Crypt::initKernel()
+{
+	for (int i = 0; i < 256; i++)
+		m_kernel[i] = m_kernelStr.mid(2*i, 2).toUInt(NULL, 16);
+}
+
 /////KBLURER
 
 //_-_-_PUBLIC

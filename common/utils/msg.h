@@ -8,6 +8,8 @@
 ///transfer the event.
 
 #include <QString>
+#include <QMutex>
+#include <QWaitCondition>
 
 #include "xmlbehavior.h"
 #include "prc.h"
@@ -20,16 +22,14 @@ public :
 	enum Type{
 		NONE,
 		INFO, //Casual information transition between systems
-		RPRT, //Meant to stay in the same system
-		RQST, //Meant to ask for something
-		ANSW //Meant to answer a request
+		RPRT //Meant to stay in the same system, can block a thrad by calling waitForAck()
 	};
 
 	//Lifetime
 	Msg(const QString& p_name, Type p_type);
 	Msg(const QDomNode& p_node);
 	Msg(const Msg& p_msg);
-	virtual ~Msg();
+	virtual ~Msg() {}
 
 	//Get
 	int id() const { return m_id; }
@@ -37,20 +37,26 @@ public :
 	Type type() const { return m_type; }
 
 	//Operation
-	virtual void add(const QString& p_tag, const PRC<XmlBehavior>& p_entity) = 0;
-	virtual void get(const QString& p_tag, PRC<XmlBehavior>& p_entity) = 0;
+	virtual void add(const QString& p_tag, const XmlBehavior* p_entity) = 0;
+	virtual void get(const QString& p_tag, XmlBehavior* p_entity) = 0;
 	virtual bool exist(const QString& p_tag) = 0;
+
+	void waitForAck();
+	void ack();
 
 protected:
 	Msg& operator=(const Msg&) { return *this; }
 
 protected:
-	static unsigned int m_idCount;
-	static QMutex m_mutex;
+	static unsigned int s_idCount;
+	static QMutex s_mutex;
 
 	unsigned int m_id;
 	QString m_name;
 	Type m_type;
+
+	QMutex m_mutex;
+	QWaitCondition m_reportWaitCondition;
 };
 
 }

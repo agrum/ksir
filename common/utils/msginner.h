@@ -24,8 +24,8 @@ public:
 	MsgInner& operator=(const MsgInner& p_msg);
 
 	//Operation
-	void add(const QString& p_tag, const PRC<XmlBehavior>& p_entity);
-	void get(const QString& p_tag, PRC<XmlBehavior>& p_entity);
+	void add(const QString& p_tag, const XmlBehavior* p_entity);
+	void get(const QString& p_tag, XmlBehavior* p_entity);
 	bool exist(const QString& p_tag);
 
 private:
@@ -33,7 +33,7 @@ private:
 	void writeXml(QDomNode& p_node) const;
 
 private:
-	QMap<QString, PRC<XmlBehavior> > m_map;
+	QMap<QString, XmlBehavior> m_map;
 };
 
 }

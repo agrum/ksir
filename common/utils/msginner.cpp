@@ -4,6 +4,7 @@
 
 using namespace ksir;
 
+
 /* $Desc Create a message with correspondign name and type.
  *	Names are used for ownership in the mailman while types
  *	are useless.
@@ -60,9 +61,9 @@ MsgInner::operator=(const MsgInner& p_msg)
  * $Rtrn /.
  */
 void
-MsgInner::add(const QString& p_tag, const PRC<XmlBehavior>& p_entity)
+MsgInner::add(const QString& p_tag, const XmlBehavior* p_entity)
 {
-	m_map.insert(p_tag, p_entity);
+	m_map.insert(p_tag, *p_entity);
 }
 
 /* $Desc Reconstruct the input entry from the entity map of the message.
@@ -71,9 +72,9 @@ MsgInner::add(const QString& p_tag, const PRC<XmlBehavior>& p_entity)
  * $Rtrn /.
  */
 void
-MsgInner::get(const QString& p_tag, PRC<XmlBehavior>& p_entity)
+MsgInner::get(const QString& p_tag, XmlBehavior* p_entity)
 {
-	p_entity = m_map[p_tag];
+	*p_entity = m_map[p_tag];
 }
 
 /* $Desc Check the existence of an entry in the message s map.
@@ -94,10 +95,10 @@ MsgInner::exist(const QString& p_tag)
 void
 MsgInner::writeXml(QDomNode& p_node) const
 {
-	QMap<QString, PRC<XmlBehavior> >::const_iterator iter;
+	QMap<QString, XmlBehavior>::const_iterator iter;
 
 	for(iter = m_map.begin(); iter != m_map.end(); iter++)
-		iter.value()->to(p_node, iter.key());
+		iter.value().to(p_node, iter.key());
 
 	addAttribute(p_node, "id", QString::number(m_id));
 	addAttribute(p_node, "name", m_name);

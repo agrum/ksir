@@ -20,8 +20,8 @@ public:
 	MsgOutter& operator=(const MsgOutter& p_msg);
 
 	//Operation
-	void add(const QString& p_tag, const PRC<XmlBehavior>& p_entity);
-	void get(const QString& p_tag, PRC<XmlBehavior>& p_entity);
+	void add(const QString& p_tag, const XmlBehavior* p_entity);
+	void get(const QString& p_tag, XmlBehavior* p_entity);
 	bool exist(const QString& p_tag);
 
 private:

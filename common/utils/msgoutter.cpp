@@ -2,6 +2,7 @@
 
 using namespace ksir;
 
+
 /* $Desc Create a message with correspondign name and type.
  *	Names are used for ownership in the mailman while types
  *	are useless.
@@ -74,7 +75,7 @@ MsgOutter::operator=(const MsgOutter& p_msg)
  * $Rtrn /.
  */
 void
-MsgOutter::add(const QString& p_tag, const PRC<XmlBehavior>& p_entity)
+MsgOutter::add(const QString& p_tag, const XmlBehavior* p_entity)
 {
 	p_entity->to(m_doc, p_tag);
 }
@@ -86,7 +87,7 @@ MsgOutter::add(const QString& p_tag, const PRC<XmlBehavior>& p_entity)
  * $Rtrn /.
  */
 void
-MsgOutter::get(const QString& p_tag, PRC<XmlBehavior>& p_entity)
+MsgOutter::get(const QString& p_tag, XmlBehavior* p_entity)
 {
 	for (QDomNode n = m_doc.firstChild(); !n.isNull(); n = n.nextSibling())
 		if (n.nodeName() == p_tag)

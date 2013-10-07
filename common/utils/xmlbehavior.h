@@ -18,6 +18,8 @@ namespace ksir {
 class XmlBehavior : public pLogBehavior
 {
 public:
+	XmlBehavior() {}
+	~XmlBehavior() {}
 	//Operation
 	void from(const QDomNode& p_node);
 	void to(QDomNode& p_node, const QString& p_name) const;

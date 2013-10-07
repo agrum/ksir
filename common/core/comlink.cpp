@@ -2,12 +2,15 @@
 
 #include <assert.h>
 
-#include "msginner.h"
-#include "string.h"
+#include "../utils/msginner.h"
+#include "../utils/string.h"
+
+#include "mailman.h"
 
 #define COMLINK_MAX_BUF 250
 
 using namespace ksir;
+
 
 QMap<QString, ComLink*> ComLink::s_comLinkDirectory;
 QMutex ComLink::s_comLinkDirectoryLock;
@@ -45,6 +48,15 @@ ComLink::ComLink(const QString& p_id) :
  */
 ComLink::~ComLink()
 {
+	//Remove all ownershipping from the mailman
+	PRC<Msg> report = new MsgInner(MSG_RMV_OWNERSHIP, Msg::RPRT);
+
+	report->add("owner", new String(m_id));
+
+	ComLink::write(report, MAILMAN);
+	report->waitForAck();
+
+	//Remove from static directory
 	s_comLinkDirectoryLock.lock();
 		s_comLinkDirectory.remove(m_id);
 	s_comLinkDirectoryLock.unlock();
@@ -84,10 +96,15 @@ ComLink::write(PRC<Msg>& p_msg, const QString& p_dst)
 
 	ComLink* dstComLink;
 
-	//Getthe com linkd esired, or wait for its creation
+	//Get the com link desired, or wait for its creation
+	//If the comlink writes for the first time of the program
+	//	lifetime in the mailman comlink, the mailman is initialized
 	s_comLinkDirectoryLock.lock();
 		while((dstComLink = s_comLinkDirectory.value(p_dst, NULL)) == NULL)
-			s_waitConditionNewLink.wait(&s_comLinkDirectoryLock);
+			if(p_dst == MAILMAN)
+				MailMan::initialize(); //Initialize the mailman here
+			else
+				s_waitConditionNewLink.wait(&s_comLinkDirectoryLock);
 	s_comLinkDirectoryLock.unlock();
 
 	//push the message into the the dest queue
@@ -125,9 +142,11 @@ ComLink::read()
 void
 ComLink::askOwnershipOver(const QString& p_name)
 {
-	PRC<Msg> request = new MsgInner(MSG_ASK_OWNERSHIP, Msg::RQST);
+	PRC<Msg> report = new MsgInner(MSG_ASK_OWNERSHIP, Msg::RPRT);
 
-	request->add("name", new String(p_name));
+	report->add("owner", new String(m_id));
+	report->add("shipping", new String(p_name));
 
-	ComLink::write(request, MAILMAN);
+	ComLink::write(report, MAILMAN);
+	report->waitForAck();
 }
