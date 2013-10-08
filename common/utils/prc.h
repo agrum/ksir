@@ -135,7 +135,7 @@ template<class _Tp> inline void PRC<_Tp>::addRef()
 	m_mutex->lock();
 		if(m_refcount)
 			++(*m_refcount);
-	m_mutex->lock();
+	m_mutex->unlock();
 }
 
 template<class T> inline void PRC<T>::release()

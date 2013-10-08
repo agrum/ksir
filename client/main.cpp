@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 	comLinkA.askOwnershipOver("MsgForA");
 
-	PRC<Msg> MsgForA = new MsgInner("MsgForA", Msg::INFO);
+	PRC<Msg> MsgForA = new Msg("MsgForA", Msg::INFO);
 	ComLink::write(MsgForA, MAILMAN);
 
 	PRC<Msg> MsgForARead = comLinkA.read();
@@ -37,5 +37,5 @@ int main(int argc, char *argv[])
 	//doc.setContent(&file);
 	//kClient client(doc.firstChild());
 
-	return a.exec();
+	return 1;
 }

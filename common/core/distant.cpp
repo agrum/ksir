@@ -3,8 +3,7 @@
 #include <QTime>
 #include <assert.h>
 
-#include "../utils/msginner.h"
-#include "../utils/msgoutter.h"
+#include "../utils/msg.h"
 #include "../utils/string.h"
 
 #include "mailman.h"
@@ -80,7 +79,7 @@ Distant::run()
 			m_connected = false;
 
 			//Write a report for disconnected distant system
-			PRC<Msg> report = new MsgInner(MSG_DISC_SOCK, Msg::RPRT);
+			PRC<Msg> report = new Msg(MSG_DISC_SOCK, Msg::RPRT);
 			report->add("system", new String(m_id));
 			ComLink::write(report, MAILMAN);
 
@@ -94,7 +93,7 @@ Distant::run()
 			m_socket.connectToHost(m_addr, m_port);
 			//If the connection succed, establish comm with the distant system
 			if(m_socket.waitForConnected(1000)){
-				PRC<Msg> aliveMsg = new MsgOutter("Hello", Msg::INFO);
+				PRC<Msg> aliveMsg = new Msg("Hello", Msg::INFO);
 
 				m_sender.getComLink().write(aliveMsg);
 			}
@@ -106,7 +105,7 @@ Distant::run()
 		m_connected = true;
 
 		//Write a report for connected distant system
-		PRC<Msg> report = new MsgInner(MSG_CONN_SOCK, Msg::RPRT);
+		PRC<Msg> report = new Msg(MSG_CONN_SOCK, Msg::RPRT);
 		report->add("system", new String(m_id));
 		ComLink::write(report, MAILMAN);
 

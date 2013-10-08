@@ -32,8 +32,8 @@ protected :
 	virtual void writeXml(QDomNode&) const {}
 
 	//Get
-	const QString getAttribute(const QDomNode& p_node, const QString& p_name) const;
-	const QString getText(const QDomNode& p_node) const;
+	QString getAttribute(const QDomNode& p_node, const QString& p_name) const;
+	QString getText(const QDomNode& p_node) const;
 
 	//Operation
 	void addAttribute(QDomNode& p_node, const QString& p_name, const QString& p_value) const;

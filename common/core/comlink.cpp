@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-#include "../utils/msginner.h"
+#include "../utils/msg.h"
 #include "../utils/string.h"
 
 #include "mailman.h"
@@ -49,7 +49,7 @@ ComLink::ComLink(const QString& p_id) :
 ComLink::~ComLink()
 {
 	//Remove all ownershipping from the mailman
-	PRC<Msg> report = new MsgInner(MSG_RMV_OWNERSHIP, Msg::RPRT);
+	PRC<Msg> report = new Msg(MSG_RMV_OWNERSHIP, Msg::RPRT);
 
 	report->add("owner", new String(m_id));
 
@@ -102,7 +102,11 @@ ComLink::write(PRC<Msg>& p_msg, const QString& p_dst)
 	s_comLinkDirectoryLock.lock();
 		while((dstComLink = s_comLinkDirectory.value(p_dst, NULL)) == NULL)
 			if(p_dst == MAILMAN)
+			{
+				s_comLinkDirectoryLock.unlock();
 				MailMan::initialize(); //Initialize the mailman here
+				s_comLinkDirectoryLock.unlock();
+			}
 			else
 				s_waitConditionNewLink.wait(&s_comLinkDirectoryLock);
 	s_comLinkDirectoryLock.unlock();
@@ -142,7 +146,7 @@ ComLink::read()
 void
 ComLink::askOwnershipOver(const QString& p_name)
 {
-	PRC<Msg> report = new MsgInner(MSG_ASK_OWNERSHIP, Msg::RPRT);
+	PRC<Msg> report = new Msg(MSG_ASK_OWNERSHIP, Msg::RPRT);
 
 	report->add("owner", new String(m_id));
 	report->add("shipping", new String(p_name));

@@ -11,7 +11,8 @@ MailMan* MailMan::s_singleton = NULL;
  * $Parm /.
  * $Rtrn /.
  */
-MailMan::MailMan()
+MailMan::MailMan():
+	m_comLink(MAILMAN)
 {
 	start();
 }
@@ -36,35 +37,38 @@ MailMan::run()
 {
 	PRC<Msg> msg;
 
-	if((msg = m_comLink.read()) != NULL)
+	while(true)
 	{
-		if(msg->name() == MSG_ASK_OWNERSHIP)
-			//Update the ownershipping directory (add)
+		if((msg = m_comLink.read()) != NULL)
 		{
-			String owner, shipping;
-			msg->get("owner", &owner);
-			msg->get("shipping", &shipping);
+			if(msg->name() == MSG_ASK_OWNERSHIP)
+				//Update the ownershipping directory (add)
+			{
+				String owner, shipping;
+				msg->get("owner", &owner);
+				msg->get("shipping", &shipping);
 
-			m_ownershipDirectory.insert(shipping, owner);
-			msg->ack();
-		}
-		else if(msg->name() == MSG_RMV_OWNERSHIP)
-			//Update the ownershipping directory (rmv)
-		{
-			String owner;
-			msg->get("owner", &owner);
+				m_ownershipDirectory.insert(shipping, owner);
+				msg->ack();
+			}
+			else if(msg->name() == MSG_RMV_OWNERSHIP)
+				//Update the ownershipping directory (rmv)
+			{
+				String owner;
+				msg->get("owner", &owner);
 
-			QList<QString> shippings = m_ownershipDirectory.keys(owner);
-			while(!shippings.empty())
-				m_ownershipDirectory.remove(shippings.takeLast());
-			msg->ack();
-		}
-		else
-			//Otherwise, redirect the message to the owner
-		{
-			String owner;
-			if((owner = m_ownershipDirectory.value(msg->name())) != "")
-				ComLink::write(msg, owner);
+				QList<QString> shippings = m_ownershipDirectory.keys(owner);
+				while(!shippings.empty())
+					m_ownershipDirectory.remove(shippings.takeLast());
+				msg->ack();
+			}
+			else
+				//Otherwise, redirect the message to the owner
+			{
+				String owner;
+				if((owner = m_ownershipDirectory.value(msg->name())) != "")
+					ComLink::write(msg, owner);
+			}
 		}
 	}
 }

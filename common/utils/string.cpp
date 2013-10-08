@@ -23,6 +23,9 @@ String::String(QLatin1String str) :
 String::String(const QString & other) :
 	QString(other),
 	XmlBehavior("String") {}
+String::String(const String & other) :
+	QString(other),
+	XmlBehavior("String") {}
 String::String(const char * str) :
 	QString(str),
 	XmlBehavior("String") {}
@@ -32,14 +35,22 @@ String::String(const QByteArray & ba) :
 String::String(QStringDataPtr dd) :
 	QString(dd),
 	XmlBehavior("String") {}
-String::~String() { ((QString*) this)->~QString(); }
+String::~String() { /*((QString*) this)->~QString();*/ }
+
+String&
+String::operator=(const String& p_str)
+{
+	*(QString*)this = p_str;
+
+	return *this;
+}
 
 //XML
 
 void
 String::readXml(const QDomNode& p_node, const QString&)
 {
-	*this = getText(p_node);
+	*(QString*)this = getText(p_node);
 }
 
 void

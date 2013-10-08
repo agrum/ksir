@@ -3,8 +3,6 @@
 
 #include "../core/distant.h"
 #include "../core/mailman.h"
-#include "../utils/msginner.h"
-#include "../utils/msgoutter.h"
 
 
 

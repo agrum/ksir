@@ -18,9 +18,7 @@ SOURCES += \
     utils/string.cpp \
     utils/crypt.cpp \
     utils/msg.cpp \
-    utils/msginner.cpp \
     utils/xmlbehavior.cpp \
-    utils/msgoutter.cpp \
     core/distant.cpp \
     core/mailman.cpp \
     core/receiver.cpp \
@@ -32,9 +30,7 @@ HEADERS += \
     utils/prc.h \
     utils/string.h \
     utils/crypt.h \
-    utils/msginner.h \
     utils/msg.h \
-    utils/msgoutter.h \
     utils/xmlbehavior.h \
     utils/prc.h \
     core/distant.h \

@@ -13,6 +13,8 @@ void XmlBehavior::from(const QDomNode& p_root)
 	if(m_initialized == true)
 		logE("Already initialized from XML content");
 
+	readXml(p_root, p_root.toElement().tagName());
+
 	QDomNode n = p_root.firstChild();
 	while (!n.isNull()){
 		if (n.isElement()){
@@ -61,7 +63,7 @@ XmlBehavior::XmlBehavior(const QString& p_sign) :
  * $Parm p_attribute Name of the attribute researched.
  * $Rtrn Value of the attribute as a string.
  */
-const QString
+QString
 XmlBehavior::getAttribute(const QDomNode& p_node, const QString& p_attribute) const
 {
 	return p_node.toElement().attribute(p_attribute);
@@ -71,7 +73,7 @@ XmlBehavior::getAttribute(const QDomNode& p_node, const QString& p_attribute) co
  * $Parm p_node Node holding the information desired.
  * $Rtrn Content of the node as a string.
  */
-const QString
+QString
 XmlBehavior::getText(const QDomNode& p_node) const
 {
 	return p_node.toElement().text();

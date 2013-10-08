@@ -19,11 +19,13 @@ public:
 	String(QChar ch);
 	String(int size, QChar ch);
 	String(QLatin1String str);
-	String(const QString & other);
+	String(const QString& other);
+	String(const String& other);
 	String(const char * str);
 	String(const QByteArray & ba);
 	String(QStringDataPtr dd);
 	~String();
+	String& operator=(const String&);
 
 	//XML
 	void readXml(const QDomNode& p_node, const QString&);

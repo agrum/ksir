@@ -3,7 +3,7 @@
 #include <QByteArray>
 #include <QDomDocument>
 
-#include "../utils/msgoutter.h"
+#include "../utils/msg.h"
 
 #include "mailman.h"
 
@@ -102,7 +102,7 @@ Receiver::run()
 
 				fullyRead = true;
 				doc.setContent(msgByteArray);
-				msg = new MsgOutter(doc);
+				msg = new Msg(doc);
 
 				//No other msg than Hello accepted as uncrypted
 				if(crypted || msg->name() == "Hello")

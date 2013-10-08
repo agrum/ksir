@@ -29,7 +29,8 @@ public :
 	Msg(const QString& p_name, Type p_type);
 	Msg(const QDomNode& p_node);
 	Msg(const Msg& p_msg);
-	virtual ~Msg() {}
+	~Msg();
+	Msg& operator=(const Msg&);
 
 	//Get
 	int id() const { return m_id; }
@@ -37,15 +38,16 @@ public :
 	Type type() const { return m_type; }
 
 	//Operation
-	virtual void add(const QString& p_tag, const XmlBehavior* p_entity) = 0;
-	virtual void get(const QString& p_tag, XmlBehavior* p_entity) = 0;
-	virtual bool exist(const QString& p_tag) = 0;
+	virtual void add(const QString& p_tag, const PRC<XmlBehavior> p_entity);
+	virtual void get(const QString& p_tag, XmlBehavior* p_entity);
+	virtual bool exist(const QString& p_tag);
 
 	void waitForAck();
 	void ack();
 
-protected:
-	Msg& operator=(const Msg&) { return *this; }
+private:
+	//XML
+	void writeXml(QDomNode& p_node) const;
 
 protected:
 	static unsigned int s_idCount;
@@ -54,6 +56,7 @@ protected:
 	unsigned int m_id;
 	QString m_name;
 	Type m_type;
+	QDomDocument m_doc;
 
 	QMutex m_mutex;
 	QWaitCondition m_reportWaitCondition;
