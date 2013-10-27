@@ -13,29 +13,27 @@ TEMPLATE = lib
 DEFINES += GAME_LIBRARY
 
 SOURCES += game.cpp \
-    worlmap.cpp \
     territory.cpp \
     territoryeffect.cpp \
     region.cpp \
-    player.cpp \
-    actionlist.cpp \
-    deck.cpp \
     cardterritory.cpp \
     cardevent.cpp \
-    cardmission.cpp
+    cardmission.cpp \
+    worldmap.cpp \
+    civilization.cpp \
+    territorylink.cpp
 
 HEADERS += game.h \
-    worlmap.h \
     territory.h \
     territoryeffect.h \
     region.h \
-    player.h \
-    actionlist.h \
-    card.h \
     deck.h \
     cardterritory.h \
     cardevent.h \
-    cardmission.h
+    cardmission.h \
+    worldmap.h \
+    civilization.h \
+    territorylink.h
 
 CONFIG(release, debug|release): LIBS += \
 	-L$$PWD/../../pomelog/build/release/lib/ -lpomelog \

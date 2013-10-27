@@ -35,7 +35,7 @@ MailMan::initialize()
 void
 MailMan::run()
 {
-	PRC<Msg> msg;
+	PRC<Msg> msg = NULL;
 
 	while(true)
 	{
@@ -70,5 +70,6 @@ MailMan::run()
 					ComLink::write(msg, owner);
 			}
 		}
+		msg = NULL;
 	}
 }

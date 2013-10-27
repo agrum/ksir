@@ -1,0 +1,19 @@
+#ifndef TERRITORYEFFECT_H
+#define TERRITORYEFFECT_H
+
+#include 
+
+namespace ksir {
+
+class TerritoryEffect
+{
+public:
+	TerritoryEffect();
+	
+private:
+	
+};
+
+}
+
+#endif // TERRITORYEFFECT_H

@@ -67,7 +67,7 @@ ComLink::~ComLink()
  * $Rtrn /.
  */
 void
-ComLink::write(PRC<Msg>& p_msg)
+ComLink::write(const PRC<Msg>& p_msg)
 {
 	assert(p_msg != NULL);
 
@@ -90,7 +90,7 @@ ComLink::write(PRC<Msg>& p_msg)
  * $Rtrn /.
  */
 void
-ComLink::write(PRC<Msg>& p_msg, const QString& p_dst)
+ComLink::write(const PRC<Msg>& p_msg, const QString& p_dst)
 {
 	assert(p_msg != NULL);
 

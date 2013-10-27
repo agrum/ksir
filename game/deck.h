@@ -3,24 +3,47 @@
 
 #include <QList>
 
-#include "ksir_common.h"
-
-#include "card.h"
-
 namespace ksir {
 
-class Deck
+template<class T> class Deck
 {
 public:
-	Deck(const QList<PRC<Card> >&);
+	Deck();
 
-	PRC<Card> drawCard();
-	void discardCard(PRC<Card>);
+	T drawCard();
+	void discardCard(T);
 
 private:
-	QList<PRC<Card> > m_stack;
-	QList<PRC<Card> > m_discard;
+	QList<T> m_stack;
+	QList<T> m_discard;
 };
+
+////////
+
+template<class T> inline
+Deck<T>::Deck()
+{
+}
+
+template<class T> inline
+T
+Deck<T>::drawCard()
+{
+	if(m_stack.empty())
+	{
+		m_stack = m_discard;
+		m_discard.clear();
+	}
+
+	return m_stack.takeFirst();
+}
+
+template<class T> inline
+void
+Deck<T>::discardCard(T p_card)
+{
+	m_discard.insert(m_discard.begin() + (qrand()%m_discard.size()), p_card);
+}
 
 }
 

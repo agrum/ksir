@@ -1,19 +1,24 @@
 #ifndef TERRITORY_H
 #define TERRITORY_H
 
-#include "ksir_common.h"
-
-#include "region.h"
+#include <QString>
+#include <QList>
 
 namespace ksir {
+
+class Region;
+class TerritoryLink;
 
 class Territory
 {
 public:
 	Territory();
 
+	friend class Region;
+
 private:
-	PRC<Region> m_pRegion;
+	QList<TerritoryLink> m_territoryLinkList;
+	Region* m_region;
 };
 
 }

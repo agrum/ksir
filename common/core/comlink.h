@@ -41,8 +41,8 @@ public:
 	const QString& id() { return m_id; }
 
 	//Operation
-	void write(PRC<Msg>& p_msg);
-	static void write(PRC<Msg>& p_msg, const QString& p_dst);
+	void write(const PRC<Msg>& p_msg);
+	static void write(const PRC<Msg>& p_msg, const QString& p_dst);
 	PRC<Msg> read();
 	void askOwnershipOver(const QString& p_name);
 
