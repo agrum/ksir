@@ -7,6 +7,9 @@ class TerritoryEffect
 {
 public:
 	TerritoryEffect();
+	
+private:
+	
 };
 
 }

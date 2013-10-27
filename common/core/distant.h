@@ -20,7 +20,6 @@
 
 #include "../utils/xmlbehavior.h"
 
-#include "comlink.h"
 #include "receiver.h"
 #include "sender.h"
 

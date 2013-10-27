@@ -5,8 +5,3 @@ using namespace ksir;
 Game::Game()
 {
 }
-
-void
-Game::run()
-{
-}

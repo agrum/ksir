@@ -14,11 +14,10 @@
 
 #include <pomelog.h>
 
-#include "../utils/crypt.h"
-
-#include "comlink.h"
-
 namespace ksir {
+
+class Crypt;
+class Clearer;
 
 class Receiver : public QThread, public pLogBehavior
 {
@@ -37,7 +36,7 @@ private:
 	QTcpSocket* m_socket;
 	QMutex m_mutex;
 
-	kClearer* m_clearer;
+	Clearer* m_clearer;
 };
 
 }

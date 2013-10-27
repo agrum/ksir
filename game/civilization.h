@@ -1,13 +1,18 @@
 #ifndef CIVILIZATION_H
 #define CIVILIZATION_H
 
-#include "cardterritory.h"
-#include "cardevent.h"
-#include "cardmission.h"
-#include "territory.h"
-#include "game.h"
+#include <QList>
+#include <QtXml>
+
+#include <utils/prc.h>
 
 namespace ksir {
+
+class CardMission;
+class CardTerritory;
+class CardEvent;
+class Territory;
+class Game;
 
 class Civilization
 {

@@ -1,6 +1,7 @@
 #include "mailman.h"
 
 #include "../utils/string.h"
+#include "../utils/msg.h"
 
 using namespace ksir;
 

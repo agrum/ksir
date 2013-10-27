@@ -133,7 +133,7 @@ Crypt::initKernel()
 		m_kernel[i] = m_kernelStr.mid(2*i, 2).toUInt(NULL, 16);
 }
 
-/////KBLURER
+/////Blurer
 
 //_-_-_PUBLIC
 
@@ -143,7 +143,7 @@ Crypt::initKernel()
  * $Parm /
  * $Rtrn /
  */
-kBlurer::kBlurer(const Crypt& p_crypt) :
+Blurer::Blurer(const Crypt& p_crypt) :
 m_crypt(p_crypt)
 {
 	//The mixer modify frequently the bluring key.
@@ -164,7 +164,7 @@ m_crypt(p_crypt)
  * $Parm p_node QDomNode as the one filled by writeXML().
  * $Rtrn /
  */
-kBlurer::kBlurer(const kBlurer& p_blurer) :
+Blurer::Blurer(const Blurer& p_blurer) :
 m_crypt(p_blurer.m_crypt)
 {
 	memcpy(m_mixer,	p_blurer.m_mixer, 256);
@@ -175,7 +175,7 @@ m_crypt(p_blurer.m_crypt)
  * $Parm /
  * $Rtrn /
  */
-kBlurer::~kBlurer()
+Blurer::~Blurer()
 {
 
 }
@@ -184,8 +184,8 @@ kBlurer::~kBlurer()
  * $Parm p_crypt reference.
  * $Rtrn /
  */
-kBlurer&
-kBlurer::operator=(const kBlurer& p_blurer)
+Blurer&
+Blurer::operator=(const Blurer& p_blurer)
 {
 	m_crypt = p_blurer.m_crypt;
 
@@ -203,7 +203,7 @@ kBlurer::operator=(const kBlurer& p_blurer)
  * $Rtrn Encrypted input.
  */
 QByteArray
-kBlurer::blur(const QByteArray& p_msg)
+Blurer::blur(const QByteArray& p_msg)
 {
 	QByteArray rtn;
 	int blocks = p_msg.length()/256 + p_msg.length()/1; //Message splitted every 256 chars
@@ -237,7 +237,7 @@ kBlurer::blur(const QByteArray& p_msg)
  * $Rtrn The encrypted block in a 256bytes QByteArray.
  */
 QByteArray
-kBlurer::blurBlock(const unsigned char* p_block)
+Blurer::blurBlock(const unsigned char* p_block)
 {
 	QByteArray rtn(256, (unsigned char) 255);
 	int i = 0;
@@ -260,7 +260,7 @@ kBlurer::blurBlock(const unsigned char* p_block)
 	return rtn;
 }
 
-/////KCLEARER
+/////Clearer
 
 //_-_-_PUBLIC
 
@@ -270,7 +270,7 @@ kBlurer::blurBlock(const unsigned char* p_block)
  * $Parm /
  * $Rtrn /
  */
-kClearer::kClearer(const Crypt& p_clearer) :
+Clearer::Clearer(const Crypt& p_clearer) :
 m_crypt(p_clearer),
 m_checksumInitialized(false)
 {
@@ -281,7 +281,7 @@ m_checksumInitialized(false)
  * $Parm p_node QDomNode as the one filled by writeXML().
  * $Rtrn /
  */
-kClearer::kClearer(const kClearer& p_clearer) :
+Clearer::Clearer(const Clearer& p_clearer) :
 m_crypt(p_clearer.m_crypt),
 m_checksum(p_clearer.m_checksum),
 m_checksumInitialized(p_clearer.m_checksumInitialized)
@@ -293,7 +293,7 @@ m_checksumInitialized(p_clearer.m_checksumInitialized)
  * $Parm /
  * $Rtrn /
  */
-kClearer::~kClearer()
+Clearer::~Clearer()
 {
 
 }
@@ -302,8 +302,8 @@ kClearer::~kClearer()
  * $Parm p_crypt reference.
  * $Rtrn /
  */
-kClearer&
-kClearer::operator=(const kClearer& p_clearer)
+Clearer&
+Clearer::operator=(const Clearer& p_clearer)
 {
 	m_crypt = p_clearer.m_crypt;
 
@@ -321,7 +321,7 @@ kClearer::operator=(const kClearer& p_clearer)
  * $Rtrn Encrypted input.
  */
 QByteArray
-kClearer::clear(const QByteArray& p_msg, int size)
+Clearer::clear(const QByteArray& p_msg, int size)
 {
 	assert(size%256 == 0);
 
@@ -354,7 +354,7 @@ kClearer::clear(const QByteArray& p_msg, int size)
  * $Rtrn True if the checksum is consistant, else otherwise.
  */
 bool
-kClearer::extractClearKey(const unsigned char* p_cryptedKernel, unsigned char* p_blurKey)
+Clearer::extractClearKey(const unsigned char* p_cryptedKernel, unsigned char* p_blurKey)
 {
 	unsigned char checkSum = 0;
 
@@ -391,7 +391,7 @@ kClearer::extractClearKey(const unsigned char* p_cryptedKernel, unsigned char* p
  * $Rtrn The uncrypted block in a up to 256bytes QByteArray.
  */
 QByteArray
-kClearer::clearBlock(const unsigned char* p_block, unsigned char* p_blurKey)
+Clearer::clearBlock(const unsigned char* p_block, unsigned char* p_blurKey)
 {
 	QByteArray rtn(256, (char) 0);
 

@@ -3,6 +3,9 @@
 #include <QByteArray>
 #include <QDomDocument>
 
+#include "../utils/crypt.h"
+#include "../utils/msg.h"
+
 using namespace ksir;
 
 
@@ -45,7 +48,7 @@ Sender::setCrypt(const Crypt& p_crypt)
 	m_mutex.lock();
 		if(m_blurer != NULL)
 			delete m_blurer;
-		m_blurer = new kBlurer(p_crypt);
+		m_blurer = new Blurer(p_crypt);
 	m_mutex.unlock();
 }
 

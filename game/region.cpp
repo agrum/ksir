@@ -1,6 +1,5 @@
 #include "region.h"
 
-#include "ksir_common.h"
 #include "territory.h"
 #include "territorylink.h"
 
@@ -41,7 +40,7 @@ Region::reinforcement()
 	//QVector<QPair<const PRC<Territory>, BoudaryType> > m_territoryLinkList;
 	float reinforcementF = 0;
 	QList<const Territory*>::Iterator terriIte;
-	QList<TerritoryLink>::Iterator linkIte;
+	QList<TerritoryLink>::ConstIterator linkIte;
 
 	//Group reinforcement
 	reinforcementF += 0.35 * m_territoryList.size();
@@ -62,4 +61,6 @@ Region::reinforcement()
 
 	m_reinforcement = (unsigned int) reinforcementF;
 	m_reinforcementComputed = true;
+
+	return m_reinforcement;
 }

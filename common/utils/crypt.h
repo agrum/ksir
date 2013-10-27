@@ -49,14 +49,14 @@ private:
 	QByteArray m_kernelStr;
 };
 
-class kBlurer
+class Blurer
 {
 public:
 	//Lifetime
-	kBlurer(const Crypt&);
-	kBlurer(const kBlurer&);
-	virtual ~kBlurer();
-	kBlurer& operator=(const kBlurer&);
+	Blurer(const Crypt&);
+	Blurer(const Blurer&);
+	virtual ~Blurer();
+	Blurer& operator=(const Blurer&);
 
 	//Usage interface
 	QByteArray blur(const QByteArray&);
@@ -83,14 +83,14 @@ private:
 	unsigned char m_blurKey[256];
 };
 
-class kClearer
+class Clearer
 {
 public:
 	//Lifetime
-	kClearer(const Crypt&);
-	kClearer(const kClearer&);
-	virtual ~kClearer();
-	kClearer& operator=(const kClearer&);
+	Clearer(const Crypt&);
+	Clearer(const Clearer&);
+	virtual ~Clearer();
+	Clearer& operator=(const Clearer&);
 
 	//Usage interface
 	QByteArray clear(const QByteArray&, int);

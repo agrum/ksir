@@ -19,7 +19,8 @@ public:
 	~TerritoryLink();
 	TerritoryLink& operator=(const TerritoryLink&);
 
-	Territory* opposite(Territory*);
+	Territory* opposite(const Territory*);
+	const Territory* opposite(const Territory*) const;
 	LinkType type();
 
 private:

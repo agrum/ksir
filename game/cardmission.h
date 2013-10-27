@@ -1,9 +1,6 @@
 #ifndef CARDMISSION_H
 #define CARDMISSION_H
 
-#include "ksir_common.h"
-#include "pomelog.h"
-
 namespace ksir {
 
 class CardMission

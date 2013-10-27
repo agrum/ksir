@@ -5,8 +5,12 @@
 
 #include "../utils/msg.h"
 #include "../utils/string.h"
+#include "../utils/crypt.h"
 
 #include "mailman.h"
+#include "comlink.h"
+#include "receiver.h"
+#include "sender.h"
 
 using namespace ksir;
 

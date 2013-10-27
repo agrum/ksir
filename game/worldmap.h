@@ -1,11 +1,12 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-#include "ksir_common.h"
-
-#include "territory.h"
+#include <QList>
 
 namespace ksir {
+
+class Region;
+class Territory;
 
 class WorldMap
 {

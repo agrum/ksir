@@ -26,9 +26,10 @@
 #include <pomelog.h>
 
 #include "../utils/prc.h"
-#include "../utils/msg.h"
 
 namespace ksir {
+
+class Msg;
 
 class ComLink : public pLogBehavior
 {

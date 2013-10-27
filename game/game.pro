@@ -43,8 +43,8 @@ else:CONFIG(debug, debug|release): LIBS += \
 	-L$$PWD/../../ksir/build/release/lib/ -lksir_common
 
 INCLUDEPATH += \
-	$$PWD/../common/include \
+	$$PWD/../common \
 	$$PWD/../../pomelog/include
 DEPENDPATH += \
-	$$PWD/../common/include \
+	$$PWD/../common \
 	$$PWD/../../pomelog/include

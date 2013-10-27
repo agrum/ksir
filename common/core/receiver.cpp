@@ -4,8 +4,10 @@
 #include <QDomDocument>
 
 #include "../utils/msg.h"
+#include "../utils/crypt.h"
 
 #include "mailman.h"
+#include "comlink.h"
 
 using namespace ksir;
 
@@ -49,7 +51,7 @@ Receiver::setCrypt(const Crypt& p_crypt)
 	m_mutex.lock();
 		if(m_clearer != NULL)
 			delete m_clearer;
-		m_clearer = new kClearer(p_crypt);
+		m_clearer = new Clearer(p_crypt);
 	m_mutex.unlock();
 }
 

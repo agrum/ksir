@@ -3,8 +3,8 @@
 
 #include <QVector>
 
-#include "ksir_common.h"
-#include "pomelog.h"
+#include <utils/prc.h>
+#include <pomelog.h>
 
 #include "worldmap.h"
 #include "deck.h"
@@ -20,15 +20,15 @@ class Game
 public:
 	Game();
 
-	QList<const Region*> worldRegionList();
-	QList<const Territory*> worldTerritoryList();
+	const QList<Region*>& worldRegionList();
+	const QList<Territory*>& worldTerritoryList();
 
 	PRC<CardTerritory> pickTerritoryCard();
-	PRC<CardTerritory> pickEventCard();
-	PRC<CardTerritory> pickMissionCard();
+	PRC<CardEvent> pickEventCard();
+	PRC<CardMission> pickMissionCard();
 
 	void discardTerritoryCard(const PRC<CardTerritory>& p_card);
-	void discardEventCard(const PRC<CardTerritory>& p_card);
+	void discardEventCard(const PRC<CardEvent>& p_card);
 
 private:
 	WorldMap* m_worldMap;
@@ -39,7 +39,13 @@ private:
 
 //INLINES
 
-inline QList<PRC<Territory> >&
+inline const QList<Region*>&
+Game::worldRegionList()
+{
+	return m_worldMap->regionList();
+}
+
+inline const QList<Territory*>&
 Game::worldTerritoryList()
 {
 	return m_worldMap->territoryList();
@@ -51,13 +57,13 @@ Game::pickTerritoryCard()
 	return m_territoryDeck.drawCard();
 }
 
-inline PRC<CardTerritory>
+inline PRC<CardEvent>
 Game::pickEventCard()
 {
 	return m_eventDeck.drawCard();
 }
 
-inline PRC<CardTerritory>
+inline PRC<CardMission>
 Game::pickMissionCard()
 {
 	return m_missionDeck.drawCard();
@@ -70,7 +76,7 @@ Game::discardTerritoryCard(const PRC<CardTerritory>& p_card)
 }
 
 inline void
-Game::discardEventCard(const PRC<CardTerritory>& p_card)
+Game::discardEventCard(const PRC<CardEvent>& p_card)
 {
 	return m_eventDeck.discardCard(p_card);
 }

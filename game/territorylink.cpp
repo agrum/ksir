@@ -33,16 +33,24 @@ TerritoryLink::operator=(const TerritoryLink& p_link)
 {
 	m_a = p_link.m_a;
 	m_b = p_link.m_b;
-	m_link = p_link.m_link;
+	m_type = p_link.m_type;
+
+	return *this;
 }
 
 Territory*
-TerritoryLink::opposite(Territory* p_c)
+TerritoryLink::opposite(const Territory* p_c)
 {
-	return (p_c == p_a) ? p_b : p_a;
+	return (p_c == m_a) ? m_b : m_a;
 }
 
-LinkType
+const Territory*
+TerritoryLink::opposite(const Territory* p_c) const
+{
+	return (p_c == m_a) ? m_b : m_a;
+}
+
+TerritoryLink::LinkType
 TerritoryLink::type()
 {
 	return m_type;

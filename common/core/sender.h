@@ -13,11 +13,12 @@
 
 #include <pomelog.h>
 
-#include "../utils/crypt.h"
-
 #include "comlink.h"
 
 namespace ksir {
+
+class Crypt;
+class Blurer;
 
 class Sender : public QThread, public pLogBehavior
 {
@@ -40,7 +41,7 @@ private:
 	QMutex m_mutex;
 
 	ComLink m_comLink;
-	kBlurer* m_blurer;
+	Blurer* m_blurer;
 };
 
 }
